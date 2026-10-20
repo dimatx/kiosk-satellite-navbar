@@ -9,7 +9,7 @@ import java.util.Map;
 /** The validated navbar configuration, built from the plugin's KS settings. */
 final class NavConfig {
     /** The most items a bar holds. More would not fit across a tablet. */
-    static final int MAX_ITEMS = 8;
+    static final int MAX_ITEMS = 16;
     static final int DEFAULT_INSET = 12;
 
     /** The screen edge the bar sits against. */

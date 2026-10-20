@@ -13,6 +13,7 @@ final class NavItem {
     /** The Opens choices in settings, in the order they are offered. */
     static final String PAGE = "Page";
     static final String CAMERA = "Camera view";
+    static final String CALENDAR = "Calendar";
     static final String MENU = "Menu";
     static final String ACTION = "Kiosk action";
     static final String WEB = "Web address";
@@ -62,6 +63,7 @@ final class NavItem {
         switch (opens) {
             case PAGE: target = NavTarget.page(text(row, "page")); break;
             case CAMERA: target = NavTarget.camera(text(row, "camera")); break;
+            case CALENDAR: target = NavTarget.calendar(text(row, "calendarView")); break;
             case ACTION: target = NavTarget.action(text(row, "action")); break;
             case WEB: target = NavTarget.url(text(row, "url")); break;
             default: throw new IllegalArgumentException("unknown Opens choice '" + opens + "'");
@@ -98,6 +100,7 @@ final class NavItem {
     static String kindIcon(NavTarget.Kind kind) {
         switch (kind) {
             case CAMERA: return CAMERA_ICON;
+            case CALENDAR: return "mdi:calendar-month";
             case MUSIC: return "mdi:music";
             case NOW_PLAYING: return "mdi:play-circle-outline";
             case SCREENSAVER: return "mdi:monitor-shimmer";

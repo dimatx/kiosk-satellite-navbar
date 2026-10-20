@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "ks-navbar",
   "name": "Navbar",
-  "version": "0.16.4",
+  "version": "0.17.0",
   "apiVersion": 1,
   "minAndroidSdk": 26,
   "entryClass": "com.shymoose.ksnavbar.NavbarPlugin",
@@ -86,7 +86,7 @@
       ],
       "group": "Items",
       "addTitle": "Add item",
-      "maxItems": 8,
+      "maxItems": 16,
       "row": {
         "title": "label",
         "subtitle": [
@@ -110,6 +110,7 @@
           "options": [
             "Page",
             "Camera view",
+            "Calendar",
             "Menu",
             "Kiosk action",
             "Web address"
@@ -133,6 +134,23 @@
           "visibleWhen": {
             "key": "opens",
             "equals": "Camera view"
+          }
+        },
+        {
+          "key": "calendarView",
+          "type": "select",
+          "title": "Calendar view",
+          "options": [
+            "Default",
+            "Day",
+            "Week",
+            "Month",
+            "Schedule"
+          ],
+          "description": "Default opens the view picked under Settings > Calendar. Needs Kiosk Satellite 2026.10.33 or newer.",
+          "visibleWhen": {
+            "key": "opens",
+            "equals": "Calendar"
           }
         },
         {
@@ -198,6 +216,7 @@
               "options": [
                 "Page",
                 "Camera view",
+                "Calendar",
                 "Kiosk action",
                 "Web address"
               ]
@@ -220,6 +239,23 @@
               "visibleWhen": {
                 "key": "opens",
                 "equals": "Camera view"
+              }
+            },
+            {
+              "key": "calendarView",
+              "type": "select",
+              "title": "Calendar view",
+              "options": [
+                "Default",
+                "Day",
+                "Week",
+                "Month",
+                "Schedule"
+              ],
+              "description": "Default opens the view picked under Settings > Calendar. Needs Kiosk Satellite 2026.10.33 or newer.",
+              "visibleWhen": {
+                "key": "opens",
+                "equals": "Calendar"
               }
             },
             {

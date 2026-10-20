@@ -66,6 +66,23 @@ public final class NavbarTest {
         eq("cameras/0?camera=garage", query.arguments.get("path"));
         eq("showCameraView", NavTarget.camera(CAM).command().name);
         eq(CAM, NavTarget.camera(CAM).command().arguments.get("viewId"));
+        // The calendar opens on the kiosk's default view, or on the one picked.
+        eq("openCalendar", NavTarget.calendar("Default").command().name);
+        check(NavTarget.calendar("Default").command().arguments.isEmpty());
+        check(NavTarget.calendar("").command().arguments.isEmpty());
+        eq("week", NavTarget.calendar("Week").command().arguments.get("view"));
+        eq("schedule", NavTarget.calendar(" Schedule ").command().arguments.get("view"));
+        rejects(() -> NavTarget.calendar("Year"));
+        check(NavTarget.calendar("Day").matchPath() == null);
+        for (String view : NavTarget.CALENDAR_VIEWS) NavTarget.calendar(view);
+        Map<String, Object> calendarRow = new HashMap<>();
+        calendarRow.put("label", "Calendar");
+        calendarRow.put("opens", "Calendar");
+        calendarRow.put("calendarView", "Month");
+        NavItem calendarItem = NavItem.fromRow(calendarRow, true);
+        eq(NavTarget.Kind.CALENDAR, calendarItem.target.kind);
+        eq("month", calendarItem.target.value);
+        eq("mdi:calendar-month", NavItem.kindIcon(NavTarget.Kind.CALENDAR));
         eq("showMusicAssistant", NavTarget.action("Music").command().name);
         eq("showNowPlaying", NavTarget.action("Now playing").command().name);
         eq("startScreensaver", NavTarget.action("Screensaver").command().name);
@@ -275,8 +292,8 @@ public final class NavbarTest {
         check(!floating.makeRoom);
         check(!floating.sameLook(cfg));
 
-        // At most 8 items. Rows past that are left out.
-        settings.put("items", list(rows(12)));
+        // At most 16 items. Rows past that are left out.
+        settings.put("items", list(rows(20)));
         eq(NavConfig.MAX_ITEMS, NavConfig.parse(settings).items.size());
 
         NavItem longMenu = NavItem.fromRow(menuRow("M", "", rows(7)), true);

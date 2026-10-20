@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.17.0
+
+- An item or menu entry can open the kiosk's **Calendar**, on its default view or on Day, Week, Month or Schedule. Needs Kiosk Satellite 2026.10.33 or newer (issue 1).
+- A bar holds up to 16 items, as many as a menu (issue 2).
+
 ## 0.16.4
 
 - An amber icon tile, so the icon stands out against the teal Community Plugins page.

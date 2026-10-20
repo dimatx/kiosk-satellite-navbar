@@ -6,12 +6,15 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** Where a navbar item goes: a dashboard view, a camera view, a kiosk action or a web address. */
+/** Where a navbar item goes: a dashboard view, a camera view, the calendar, a kiosk action or a web address. */
 final class NavTarget {
-    enum Kind { PAGE, URL, CAMERA, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
+    enum Kind { PAGE, URL, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
 
     /** The Kiosk action choices in settings, in the order they are offered. */
     static final String[] ACTIONS = {"Music", "Now playing", "Screensaver", "App launcher", "Reload", "Start page"};
+
+    /** The calendar view choices in settings. Default leaves the view to the kiosk's Calendar settings. */
+    static final String[] CALENDAR_VIEWS = {"Default", "Day", "Week", "Month", "Schedule"};
 
     /** A KS host command and its arguments. */
     static final class Command {
@@ -25,7 +28,7 @@ final class NavTarget {
     }
 
     final Kind kind;
-    /** The path for PAGE, the URL for URL and the view ID for CAMERA. Empty otherwise. */
+    /** The path for PAGE, the URL for URL, the view ID for CAMERA and the calendar view for CALENDAR. Empty otherwise. */
     final String value;
 
     private NavTarget(Kind kind, String value) {
@@ -48,6 +51,19 @@ final class NavTarget {
         String id = viewId == null ? "" : viewId.trim();
         if (id.isEmpty()) throw new IllegalArgumentException("pick a camera view");
         return new NavTarget(Kind.CAMERA, id);
+    }
+
+    /**
+     * The kiosk's calendar on one of {@link #CALENDAR_VIEWS}. Default, or nothing, opens the view the
+     * kiosk's Calendar settings name. Needs Kiosk Satellite 2026.10.33 or newer.
+     */
+    static NavTarget calendar(String view) {
+        String text = view == null ? "" : view.trim();
+        if (text.isEmpty() || "Default".equals(text)) return new NavTarget(Kind.CALENDAR, "");
+        for (String known : CALENDAR_VIEWS) {
+            if (known.equals(text)) return new NavTarget(Kind.CALENDAR, text.toLowerCase(Locale.ROOT));
+        }
+        throw new IllegalArgumentException("pick a calendar view");
     }
 
     static NavTarget url(String address) {
@@ -86,6 +102,7 @@ final class NavTarget {
             case PAGE: return new Command("haNavigate", args("path", value));
             case URL: return new Command("loadUrl", args("url", value));
             case CAMERA: return new Command("showCameraView", args("viewId", value));
+            case CALENDAR: return new Command("openCalendar", value.isEmpty() ? Collections.<String, Object>emptyMap() : args("view", value));
             case MUSIC: return new Command("showMusicAssistant", Collections.<String, Object>emptyMap());
             case NOW_PLAYING: return new Command("showNowPlaying", Collections.<String, Object>emptyMap());
             case SCREENSAVER: return new Command("startScreensaver", Collections.<String, Object>emptyMap());

@@ -15,7 +15,7 @@ A companion to [Action Bar for Kiosk Satellite](https://github.com/dimatx/kiosk-
 
 - **Knows where you are.** The item for the page on screen lights up, however you got there.
 - **Menus and grids.** An item can open a list, or a grid of tiles for things like cameras. Optionally, a tap opens a page and a long press opens the menu.
-- **More than pages.** Items can open camera views, Music Assistant, Now Playing, the screensaver, the app launcher or a web address.
+- **More than pages.** Items can open camera views, the calendar, Music Assistant, Now Playing, the screensaver, the app launcher or a web address.
 - **Keeps the dashboard clear.** The dashboard ends above the bar, so no card hides under it. No card-mod needed.
 - **Works over camera views.** The bar stays on screen while a camera view is open, with a **Close** button, so you can switch cameras or leave without reaching for the camera view's own controls.
 - **Any edge.** A bar along the bottom or top, or a rail down the left or right side.
@@ -26,7 +26,7 @@ A companion to [Action Bar for Kiosk Satellite](https://github.com/dimatx/kiosk-
 
 ## Installation
 
-Needs Kiosk Satellite **2026.10.23** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**.
+Needs Kiosk Satellite **2026.10.23** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**. Calendar items need **2026.10.33** or newer.
 
 ### Community Plugins (Recommended)
 
@@ -56,6 +56,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | --- | --- | --- |
 | Page | A dashboard view | Opens the view. The item lights up while it's shown |
 | Camera view | One of the kiosk's camera views | Opens the camera view |
+| Calendar | Default, Day, Week, Month or Schedule | Opens the kiosk's calendar on that view. Default uses the view picked under **Settings > Calendar** |
 | Menu | Up to 16 entries | Opens the menu beside the item, or centered on the bar when it is wider than the bar. More than 6 entries show as a grid |
 | Kiosk action | Music, Now playing, Screensaver, App launcher, Reload or Start page | Runs it |
 | Web address | An `https://` address | Loads it in the kiosk |
@@ -66,7 +67,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 
 - **Icons.** Leave an icon empty and one is picked from the label, then filled in for you: *Garage* gets a garage, *Driveway* a road, *Living room* a sofa. **Selected icon** is shown while the item's page is open, often the filled version.
 - **Tap opens.** On a menu item, pick a page here and a tap opens that page while a long press opens the menu. Leave it empty and a tap opens the menu.
-- **Order.** Drag rows by their handle to reorder items or menu entries. A bar holds up to 8 items.
+- **Order.** Drag rows by their handle to reorder items or menu entries. A bar holds up to 16 items.
 - **Smaller screens.** If the bar does not fit, scroll along it to reach the remaining items. Menu grids use fewer columns when space is limited, and tall menus scroll.
 
 ## Settings
