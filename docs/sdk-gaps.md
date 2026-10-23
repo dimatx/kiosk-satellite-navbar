@@ -35,6 +35,7 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 30 | A fleet install cannot replace a repository install of the same plugin | Product | Low | Adding a plugin to a profile fails on kiosks that already had it |
 | 31 | The Community Plugins check fails on Windows | Tooling | Low (developers) | `community_plugins.py check` crashes before printing its results |
 | 32 | The dashboard picker leaves out Home Assistant's built-in pages | Product | Low | **Tap opens** and **Hide the bar on** cannot name Energy, Map or Logbook |
+| 33 | Plugins cannot launch an Android app | Product | Medium | An item cannot open a music, camera or thermostat app (navbar issue 4) |
 | 20 | A rejected manifest does not say which rule failed | Product, Tooling | Low (developers) | Install fails with `Invalid list setting` and no detail |
 
 ## Open gaps
@@ -209,6 +210,17 @@ These only affect plugin authors, but each cost hours the first time.
 **Workaround:** 0.18.0 adds an **Opens** choice, **Built-in page**, with a fixed list and an **Other** path. The list is ours, so a page Home Assistant adds later, or one from an integration, needs **Other**. **Tap opens** and **Hide the bar on** still take only dashboard views.
 
 **Suggestion:** Have `getDashboards` return the sidebar's built-in panels too, marked so a plugin can tell them apart, and list them in the `dashboard` picker. Both are available to the frontend as `hass.panels`.
+#### 33. Plugins cannot launch an Android app
+
+*Product.*
+
+**Need:** Open another Android app from a bar item or menu entry. A user asked for it (issue 4).
+
+**Today:** The remote API has `launchApp {package}` and `installedApps`, but the plugin docs say the read and control tables are the complete command allowlist, and neither command is in it. The only app command a plugin has is `showAppLauncher`, which opens KS's own launcher.
+
+**Workaround:** The **App launcher** kiosk action opens the launcher, and the user taps the app.
+
+**Suggestion:** Allow `launchApp` under `host.control` and `installedApps` under `host.read`. The list would suit the new `setSettingChoices` grouped choices, so a user picks an app by name instead of typing a package. Filed upstream as issue 1122.
 #### 20. A rejected manifest does not say which rule failed
 
 *Product, Tooling.*
