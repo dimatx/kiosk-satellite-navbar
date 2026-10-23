@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "ks-navbar",
   "name": "Navbar",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "apiVersion": 1,
   "minAndroidSdk": 26,
   "entryClass": "com.shymoose.ksnavbar.NavbarPlugin",
@@ -91,6 +91,7 @@
         "title": "label",
         "subtitle": [
           "page",
+          "panel",
           "action",
           "url"
         ],
@@ -109,6 +110,7 @@
           "title": "Opens",
           "options": [
             "Page",
+            "Built-in page",
             "Camera view",
             "Calendar",
             "Menu",
@@ -124,6 +126,36 @@
           "visibleWhen": {
             "key": "opens",
             "equals": "Page"
+          }
+        },
+        {
+          "key": "panel",
+          "type": "select",
+          "title": "Built-in page",
+          "options": [
+            "Energy",
+            "Map",
+            "Logbook",
+            "History",
+            "To-do",
+            "Media",
+            "Other"
+          ],
+          "description": "A page Home Assistant provides itself. Other opens a path you type.",
+          "visibleWhen": {
+            "key": "opens",
+            "equals": "Built-in page"
+          }
+        },
+        {
+          "key": "panelPath",
+          "type": "string",
+          "title": "Path",
+          "description": "The path after your Home Assistant address, such as profile.",
+          "required": true,
+          "visibleWhen": {
+            "key": "panel",
+            "equals": "Other"
           }
         },
         {
@@ -197,6 +229,7 @@
             "title": "label",
             "subtitle": [
               "page",
+              "panel",
               "action",
               "url"
             ],
@@ -215,6 +248,7 @@
               "title": "Opens",
               "options": [
                 "Page",
+                "Built-in page",
                 "Camera view",
                 "Calendar",
                 "Kiosk action",
@@ -229,6 +263,36 @@
               "visibleWhen": {
                 "key": "opens",
                 "equals": "Page"
+              }
+            },
+            {
+              "key": "panel",
+              "type": "select",
+              "title": "Built-in page",
+              "options": [
+                "Energy",
+                "Map",
+                "Logbook",
+                "History",
+                "To-do",
+                "Media",
+                "Other"
+              ],
+              "description": "A page Home Assistant provides itself. Other opens a path you type.",
+              "visibleWhen": {
+                "key": "opens",
+                "equals": "Built-in page"
+              }
+            },
+            {
+              "key": "panelPath",
+              "type": "string",
+              "title": "Path",
+              "description": "The path after your Home Assistant address, such as profile.",
+              "required": true,
+              "visibleWhen": {
+                "key": "panel",
+                "equals": "Other"
               }
             },
             {

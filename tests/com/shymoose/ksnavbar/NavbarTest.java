@@ -54,6 +54,53 @@ public final class NavbarTest {
         rejects(() -> NavTarget.url("https://user:pw@example.com"));
         rejects(() -> NavTarget.action("Dance"));
         check(NavTarget.camera(CAM).matchPath() == null);
+        panels();
+    }
+
+    private static void panels() {
+        // Built-in pages are not in any dashboard list, so each choice names its path.
+        for (Map.Entry<String, String> panel : NavTarget.PANELS.entrySet()) {
+            NavTarget target = NavTarget.panel(panel.getKey(), "");
+            eq(NavTarget.Kind.PANEL, target.kind);
+            eq(panel.getValue(), target.value);
+            eq("haNavigate", target.command().name);
+            eq(panel.getValue(), target.command().arguments.get("path"));
+        }
+        eq("energy", NavTarget.panel("Energy", "ignored").value);
+        eq("profile", NavTarget.panel("Other", " /profile/ ").value);
+        rejects(() -> NavTarget.panel("Other", ""));
+        rejects(() -> NavTarget.panel("Other", "https://x.example/a"));
+        rejects(() -> NavTarget.panel("Dance", ""));
+        rejects(() -> NavTarget.panel("", ""));
+        // A built-in page stays lit on its tabs. A dashboard view matches only itself.
+        NavTarget energy = NavTarget.panel("Energy", "");
+        check(energy.shows("/energy"));
+        check(energy.shows("/energy/electricity"));
+        check(energy.shows("/energy/gas?x=1"));
+        check(!energy.shows("/energy-two"));
+        check(!energy.shows("/map"));
+        check(!energy.shows(null));
+        check(!NavTarget.page("lovelace/kitchen").shows("/lovelace/kitchen/sub"));
+        check(NavTarget.page("lovelace/0").shows("/lovelace"));
+        Map<String, Object> row = new HashMap<>();
+        row.put("label", "Usage");
+        row.put("opens", "Built-in page");
+        row.put("panel", "Energy");
+        NavItem item = NavItem.fromRow(row, true);
+        eq(NavItem.Type.PAGE, item.type);
+        check(item.matches("/energy/water"));
+        eq("mdi:lightning-bolt-outline", item.icon);
+        row.put("panel", "Other");
+        row.put("panelPath", "profile");
+        check(NavItem.fromRow(row, true).matches("/profile"));
+        row.put("panelPath", "");
+        rejects(() -> NavItem.fromRow(row, true));
+        // A menu entry can open one too, and lights its menu.
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("label", "Gas");
+        entry.put("opens", "Built-in page");
+        entry.put("panel", "Energy");
+        check(NavItem.menu("More", "", "", Arrays.<Map<?, ?>>asList(entry)).matches("/energy/gas"));
     }
 
     private static void commands() {

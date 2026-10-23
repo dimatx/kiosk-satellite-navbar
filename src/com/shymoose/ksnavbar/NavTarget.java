@@ -6,12 +6,26 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-/** Where a navbar item goes: a dashboard view, a camera view, the calendar, a kiosk action or a web address. */
+/** Where a navbar item goes: a dashboard view, a built-in page, a camera view, the calendar, a kiosk action or a web address. */
 final class NavTarget {
-    enum Kind { PAGE, URL, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
+    enum Kind { PAGE, PANEL, URL, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
 
     /** The Kiosk action choices in settings, in the order they are offered. */
     static final String[] ACTIONS = {"Music", "Now playing", "Screensaver", "App launcher", "Reload", "Start page"};
+
+    /** The built-in Home Assistant pages offered in settings, with the path each one opens. */
+    static final Map<String, String> PANELS = new LinkedHashMap<>();
+    static {
+        PANELS.put("Energy", "energy");
+        PANELS.put("Map", "map");
+        PANELS.put("Logbook", "logbook");
+        PANELS.put("History", "history");
+        PANELS.put("To-do", "todo");
+        PANELS.put("Media", "media-browser");
+    }
+
+    /** The choice that opens a path typed in settings, for a page no list names. */
+    static final String OTHER_PANEL = "Other";
 
     /** The calendar view choices in settings. Default leaves the view to the kiosk's Calendar settings. */
     static final String[] CALENDAR_VIEWS = {"Default", "Day", "Week", "Month", "Schedule"};
@@ -44,6 +58,25 @@ final class NavTarget {
         if (text.isEmpty()) throw new IllegalArgumentException("pick a page");
         if (text.contains("://")) throw new IllegalArgumentException("a page is a dashboard view, not a web address");
         return new NavTarget(Kind.PAGE, text);
+    }
+
+    /**
+     * A page Home Assistant provides itself, such as Energy, which no dashboard list shows. The choice
+     * is one of {@link #PANELS}, or {@link #OTHER_PANEL} with the path to open.
+     */
+    static NavTarget panel(String choice, String otherPath) {
+        String text = choice == null ? "" : choice.trim();
+        if (OTHER_PANEL.equals(text)) {
+            String path = otherPath == null ? "" : otherPath.trim();
+            while (path.startsWith("/")) path = path.substring(1);
+            path = Paths.stripTrailingSlashes(path);
+            if (path.isEmpty()) throw new IllegalArgumentException("needs a path");
+            if (path.contains("://")) throw new IllegalArgumentException("a built-in page is a path, not a web address");
+            return new NavTarget(Kind.PANEL, path);
+        }
+        String path = PANELS.get(text);
+        if (path == null) throw new IllegalArgumentException("pick a built-in page");
+        return new NavTarget(Kind.PANEL, path);
     }
 
     /** A camera view ID, as the camera view picker stores it. */
@@ -92,14 +125,32 @@ final class NavTarget {
 
     /** The normalized dashboard path this target highlights, or null when it never matches a page. */
     String matchPath() {
-        return kind == Kind.PAGE ? Paths.normalize(value) : null;
+        return isPage() ? Paths.normalize(value) : null;
+    }
+
+    /** A dashboard view or a built-in page: the targets that light up while their page is shown. */
+    boolean isPage() {
+        return kind == Kind.PAGE || kind == Kind.PANEL;
+    }
+
+    /**
+     * Whether {@code path} is this target's page. A built-in page also owns its sub-pages, so Energy
+     * stays lit on its Electricity and Gas tabs. A dashboard view matches only itself.
+     */
+    boolean shows(String path) {
+        String own = matchPath();
+        if (own == null || path == null) return false;
+        String here = Paths.normalize(path);
+        if (own.equals(here)) return true;
+        return kind == Kind.PANEL && here.startsWith(own + "/");
     }
 
     /** The KS command that performs this target. */
     Command command() {
         switch (kind) {
             // haNavigate takes a query string and fragment too, and stays in the page.
-            case PAGE: return new Command("haNavigate", args("path", value));
+            case PAGE:
+            case PANEL: return new Command("haNavigate", args("path", value));
             case URL: return new Command("loadUrl", args("url", value));
             case CAMERA: return new Command("showCameraView", args("viewId", value));
             case CALENDAR: return new Command("openCalendar", value.isEmpty() ? Collections.<String, Object>emptyMap() : args("view", value));

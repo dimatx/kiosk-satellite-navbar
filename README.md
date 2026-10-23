@@ -55,6 +55,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | Opens | You pick | A tap |
 | --- | --- | --- |
 | Page | A dashboard view | Opens the view. The item lights up while it's shown |
+| Built-in page | Energy, Map, Logbook, History, To-do, Media, or Other with a path | Opens a page Home Assistant provides itself. The item stays lit on its tabs, such as Energy's Electricity and Gas |
 | Camera view | One of the kiosk's camera views | Opens the camera view |
 | Calendar | Default, Day, Week, Month or Schedule | Opens the kiosk's calendar on that view. Default uses the view picked under **Settings > Calendar** |
 | Menu | Up to 16 entries | Opens the menu beside the item, or centered on the bar when it is wider than the bar. More than 6 entries show as a grid |

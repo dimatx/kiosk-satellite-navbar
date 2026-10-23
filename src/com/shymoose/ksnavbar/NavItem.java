@@ -12,6 +12,7 @@ final class NavItem {
 
     /** The Opens choices in settings, in the order they are offered. */
     static final String PAGE = "Page";
+    static final String PANEL = "Built-in page";
     static final String CAMERA = "Camera view";
     static final String CALENDAR = "Calendar";
     static final String MENU = "Menu";
@@ -62,6 +63,7 @@ final class NavItem {
         NavTarget target;
         switch (opens) {
             case PAGE: target = NavTarget.page(text(row, "page")); break;
+            case PANEL: target = NavTarget.panel(text(row, "panel"), text(row, "panelPath")); break;
             case CAMERA: target = NavTarget.camera(text(row, "camera")); break;
             case CALENDAR: target = NavTarget.calendar(text(row, "calendarView")); break;
             case ACTION: target = NavTarget.action(text(row, "action")); break;
@@ -73,9 +75,9 @@ final class NavItem {
 
     /** A page or action with optional icons. A blank icon is picked from the label or the target. */
     static NavItem leaf(String label, String icon, String selectedIcon, NavTarget target) {
-        String fallback = fallbackIcon(label, kindIcon(target.kind));
+        String fallback = fallbackIcon(label, targetIcon(target));
         String[] icons = icons(icon, selectedIcon, fallback);
-        Type type = target.kind == NavTarget.Kind.PAGE ? Type.PAGE : Type.ACTION;
+        Type type = target.isPage() ? Type.PAGE : Type.ACTION;
         return new NavItem(type, label, icons[0], icons[1], target, Collections.<NavItem>emptyList());
     }
 
@@ -94,6 +96,22 @@ final class NavItem {
         if (children.isEmpty()) throw new IllegalArgumentException("menu has no entries");
         if (children.size() > MAX_CHILDREN) throw new IllegalArgumentException("menu has more than " + MAX_CHILDREN + " entries");
         return new NavItem(Type.MENU, label, icons[0], icons[1], null, children);
+    }
+
+    /** The icon a target suggests when the label suggests none. */
+    static String targetIcon(NavTarget target) {
+        if (target.kind == NavTarget.Kind.PANEL) {
+            switch (target.value) {
+                case "energy": return "mdi:lightning-bolt-outline";
+                case "map": return "mdi:map-outline";
+                case "logbook": return "mdi:format-list-bulleted-type";
+                case "history": return "mdi:chart-box-outline";
+                case "todo": return "mdi:clipboard-list-outline";
+                case "media-browser": return "mdi:play-box-multiple-outline";
+                default: return "mdi:view-dashboard-outline";
+            }
+        }
+        return kindIcon(target.kind);
     }
 
     /** The icon a target's kind suggests when the label suggests none. */
@@ -134,8 +152,7 @@ final class NavItem {
             for (NavItem child : children) if (child.matches(path)) return true;
             if (target == null) return false;
         }
-        String own = target.matchPath();
-        return own != null && own.equals(Paths.normalize(path));
+        return target.shows(path);
     }
 
     /** The normal and selected icon. A blank icon uses the fallback, a blank selected icon the normal one. */

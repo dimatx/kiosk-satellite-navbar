@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.18.0
+
+- An item or menu entry can open a **Built-in page** that no dashboard list shows: Energy, Map, Logbook, History, To-do or Media, or any other path under **Other** (issue 3). The item stays lit on the page's tabs.
+- New screenshots on a calmer dashboard.
+
 ## 0.17.0
 
 - An item or menu entry can open the kiosk's **Calendar**, on its default view or on Day, Week, Month or Schedule. Needs Kiosk Satellite 2026.10.33 or newer (issue 1).

@@ -510,7 +510,7 @@ final class NavViews {
                 openMenu(index);
                 return;
             }
-            if (item.target.kind == NavTarget.Kind.PAGE) preview(index);
+            if (item.target.isPage()) preview(index);
             listener.onTarget(item.target);
         }
 

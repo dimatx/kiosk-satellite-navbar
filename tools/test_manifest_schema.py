@@ -103,6 +103,11 @@ class ManifestSchemaTest(unittest.TestCase):
             self.assertIn(f'"{option}"', SOURCES['NavItem'])
         for option in fields['action']['options']:
             self.assertIn(f'"{option}"', SOURCES['NavTarget'])
+        panel_options = [o for o in fields['panel']['options'] if o != 'Other']
+        self.assertEqual(panel_options, ['Energy', 'Map', 'Logbook', 'History', 'To-do', 'Media'])
+        for option in panel_options:
+            self.assertIn(f'"{option}"', SOURCES['NavTarget'])
+        self.assertEqual(fields['panel']['options'][-1], 'Other')
         entry_opens = next(f for f in fields['entries']['fields'] if f['key'] == 'opens')
         self.assertNotIn('Menu', entry_opens['options'])
 

@@ -34,6 +34,7 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 29 | Fleet sync holds a plugin update without saying so | Product | Medium | A plugin update reaches only some kiosks, with no word on the plugin's page why |
 | 30 | A fleet install cannot replace a repository install of the same plugin | Product | Low | Adding a plugin to a profile fails on kiosks that already had it |
 | 31 | The Community Plugins check fails on Windows | Tooling | Low (developers) | `community_plugins.py check` crashes before printing its results |
+| 32 | The dashboard picker leaves out Home Assistant's built-in pages | Product | Low | **Tap opens** and **Hide the bar on** cannot name Energy, Map or Logbook |
 | 20 | A rejected manifest does not say which rule failed | Product, Tooling | Low (developers) | Install fails with `Invalid list setting` and no detail |
 
 ## Open gaps
@@ -197,6 +198,17 @@ These only affect plugin authors, but each cost hours the first time.
 
 **Suggestion:** Reconfigure stdout to UTF-8 in the script (`sys.stdout.reconfigure(encoding='utf-8')`), as the other template tools already do for Windows.
 
+#### 32. The dashboard picker leaves out Home Assistant's built-in pages
+
+*Product.*
+
+**Need:** Put Energy, Map or Logbook on the bar. A user asked for Energy (issue 3).
+
+**Today:** The `dashboard` picker, and `getDashboards` behind it, list only dashboards and their views. Home Assistant's own pages, such as Energy, Map, Logbook, History and To-do, are not dashboards, so no picker offers them. `haNavigate` opens them fine: `energy`, `energy/electricity`, `map`, `logbook`, `history`, `todo` and `media-browser` all navigated on 2026.10.33 and `getDashboardState` reported the path.
+
+**Workaround:** 0.18.0 adds an **Opens** choice, **Built-in page**, with a fixed list and an **Other** path. The list is ours, so a page Home Assistant adds later, or one from an integration, needs **Other**. **Tap opens** and **Hide the bar on** still take only dashboard views.
+
+**Suggestion:** Have `getDashboards` return the sidebar's built-in panels too, marked so a plugin can tell them apart, and list them in the `dashboard` picker. Both are available to the frontend as `hass.panels`.
 #### 20. A rejected manifest does not say which rule failed
 
 *Product, Tooling.*
