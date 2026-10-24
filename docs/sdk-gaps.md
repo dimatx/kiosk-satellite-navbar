@@ -36,6 +36,7 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 31 | The Community Plugins check fails on Windows | Tooling | Low (developers) | `community_plugins.py check` crashes before printing its results |
 | 32 | The dashboard picker leaves out Home Assistant's built-in pages | Product | Low | **Tap opens** and **Hide the bar on** cannot name Energy, Map or Logbook |
 | 33 | Plugins cannot launch an Android app | Product | Medium | An item cannot open a music, camera or thermostat app (navbar issue 4) |
+| 34 | A manifest cannot declare a minimum Kiosk Satellite version | Product | Medium | An update that needs a newer KS fails with a generic error instead of saying so |
 | 20 | A rejected manifest does not say which rule failed | Product, Tooling | Low (developers) | Install fails with `Invalid list setting` and no detail |
 
 ## Open gaps
@@ -221,6 +222,18 @@ These only affect plugin authors, but each cost hours the first time.
 **Workaround:** The **App launcher** kiosk action opens the launcher, and the user taps the app.
 
 **Suggestion:** Allow `launchApp` under `host.control` and `installedApps` under `host.read`. The list would suit the new `setSettingChoices` grouped choices, so a user picks an app by name instead of typing a package. Filed upstream as issue 1122.
+#### 34. A manifest cannot declare a minimum Kiosk Satellite version
+
+*Product.*
+
+**Need:** Use a feature that arrives in a specific KS build, such as grouped choices or launchApp, without breaking users on older builds.
+
+**Today:** The manifest has piVersion and minAndroidSdk only. On an older KS the new manifest is refused with a generic message, or a call throws at runtime. The installed release keeps running, but the user is not told why the update fails.
+
+**Workaround:** Say the required version in the README and changelog, and catch the runtime error and fall back.
+
+**Suggestion:** An optional minAppVersion in the manifest, checked at preview, install and update, with a message naming both versions. Filed upstream as issue 1140.
+
 #### 20. A rejected manifest does not say which rule failed
 
 *Product, Tooling.*
