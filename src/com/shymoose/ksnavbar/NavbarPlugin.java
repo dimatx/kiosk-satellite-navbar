@@ -136,6 +136,7 @@ public final class NavbarPlugin implements KioskPlugin {
         readDashboard();
         readCamera();
         readScreensaver();
+        listApps(null);
     }
 
     @Override
@@ -200,6 +201,7 @@ public final class NavbarPlugin implements KioskPlugin {
             issue(host, "screensaver", null);
             sync();
         }
+        else if ("settings.choices".equals(event) && payload != null && AppChoices.isAppKey(text(payload.get("key")))) listApps(text(payload.get("run")));
         // A tap outside the menu closed it. Its overlay is gone; only the bookkeeping is left.
         else if ("overlay.closed".equals(event) && payload != null && MENU.equals(payload.get("key"))) main.post(this::menuClosed);
     }
@@ -214,6 +216,55 @@ public final class NavbarPlugin implements KioskPlugin {
         screensaverRevision++;
         root.set(null);
         main.post(this::forgetOverlay);
+    }
+
+    /**
+     * Lists the apps a tap may open for the App pickers. {@code run} is the Refresh press that asked, or
+     * null at start. An older Kiosk Satellite has no such command or picker, and the field stays a text box.
+     */
+    private void listApps(String run) {
+        PluginHost current = host;
+        if (current == null) return;
+        try {
+            current.executeCommand("getLauncherApps", Collections.<String, Object>emptyMap(), (ok, data, error) -> {
+                if (host != current) return;
+                publishApps(current, run, ok, data, error);
+            });
+        } catch (UnsupportedOperationException | LinkageError olderHost) {
+            report(current, run, "error", "This Kiosk Satellite cannot list apps.");
+        } catch (RuntimeException error) {
+            report(current, run, "error", "Could not list apps: " + error.getMessage());
+        }
+    }
+
+    private void publishApps(PluginHost current, String run, boolean ok, Object data, String error) {
+        if (!ok) {
+            report(current, run, "error", "Could not list apps" + (error == null ? "." : ": " + error));
+            return;
+        }
+        List<Map<String, Object>> choices = AppChoices.choices(data);
+        try {
+            for (String key : AppChoices.KEYS) current.setSettingChoices(key, choices);
+            report(current, run, "success", choices.isEmpty()
+                ? "No apps are listed. Add some under Settings > App Launcher > Apps."
+                : "Found " + choices.size() + (choices.size() == 1 ? " app." : " apps."));
+        } catch (UnsupportedOperationException | LinkageError olderHost) {
+            report(current, run, "error", "This Kiosk Satellite cannot list apps.");
+        } catch (RuntimeException failure) {
+            report(current, run, "error", "Could not list apps: " + failure.getMessage());
+        }
+    }
+
+    /** Ends a Refresh run, if one asked. Nothing to end when the list was made at start. */
+    private static void report(PluginHost current, String run, String state, String message) {
+        if (run == null || run.isEmpty()) return;
+        try {
+            current.setupResult(run, state, message);
+        } catch (UnsupportedOperationException | LinkageError olderHost) {
+            // No Refresh button without setup controls, so no run to end.
+        } catch (RuntimeException ignored) {
+            // The run ended already.
+        }
     }
 
     /** A camera view opened, switched or closed. The camera view's own state reads the same way. */

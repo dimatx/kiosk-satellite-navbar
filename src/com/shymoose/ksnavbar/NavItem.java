@@ -18,6 +18,7 @@ final class NavItem {
     static final String MENU = "Menu";
     static final String ACTION = "Kiosk action";
     static final String WEB = "Web address";
+    static final String APP = "App";
 
     static final String DEFAULT_ICON = "mdi:circle-outline";
     static final String CAMERA_ICON = "mdi:cctv";
@@ -68,6 +69,7 @@ final class NavItem {
             case CALENDAR: target = NavTarget.calendar(text(row, "calendarView")); break;
             case ACTION: target = NavTarget.action(text(row, "action")); break;
             case WEB: target = NavTarget.url(text(row, "url")); break;
+            case APP: target = NavTarget.app(text(row, "app")); break;
             default: throw new IllegalArgumentException("unknown Opens choice '" + opens + "'");
         }
         return leaf(label, text(row, "icon"), text(row, "iconSelected"), target);
@@ -126,6 +128,7 @@ final class NavItem {
             case RELOAD: return "mdi:refresh";
             case HOME: return "mdi:home-outline";
             case URL: return "mdi:web";
+            case APP: return "mdi:application-outline";
             default: return DEFAULT_ICON;
         }
     }

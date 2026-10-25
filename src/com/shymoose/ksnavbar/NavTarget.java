@@ -8,7 +8,7 @@ import java.util.Map;
 
 /** Where a navbar item goes: a dashboard view, a built-in page, a camera view, the calendar, a kiosk action or a web address. */
 final class NavTarget {
-    enum Kind { PAGE, PANEL, URL, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
+    enum Kind { PAGE, PANEL, URL, APP, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
 
     /** The Kiosk action choices in settings, in the order they are offered. */
     static final String[] ACTIONS = {"Music", "Now playing", "Screensaver", "App launcher", "Reload", "Start page"};
@@ -77,6 +77,19 @@ final class NavTarget {
         String path = PANELS.get(text);
         if (path == null) throw new IllegalArgumentException("pick a built-in page");
         return new NavTarget(Kind.PANEL, path);
+    }
+
+    /** An Android app from the kiosk's App Launcher, by package name. Needs Kiosk Satellite 2026.10.39 or newer. */
+    static NavTarget app(String packageName) {
+        String text = packageName == null ? "" : packageName.trim();
+        if (text.isEmpty()) throw new IllegalArgumentException("pick an app");
+        if (!isPackage(text)) throw new IllegalArgumentException("is not an app");
+        return new NavTarget(Kind.APP, text);
+    }
+
+    /** Whether {@code text} reads as an Android package name, such as {@code com.spotify.music}. */
+    static boolean isPackage(String text) {
+        return text.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+");
     }
 
     /** A camera view ID, as the camera view picker stores it. */
@@ -152,6 +165,7 @@ final class NavTarget {
             case PAGE:
             case PANEL: return new Command("haNavigate", args("path", value));
             case URL: return new Command("loadUrl", args("url", value));
+            case APP: return new Command("launchApp", args("package", value));
             case CAMERA: return new Command("showCameraView", args("viewId", value));
             case CALENDAR: return new Command("openCalendar", value.isEmpty() ? Collections.<String, Object>emptyMap() : args("view", value));
             case MUSIC: return new Command("showMusicAssistant", Collections.<String, Object>emptyMap());

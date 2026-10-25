@@ -2,7 +2,7 @@
 
 Building this navbar ran into places where the Kiosk Satellite plugin SDK made a feature hard, slow or impossible. This page collects them for the KS maintainer. Each entry explains what the navbar needed, what happens today, how the plugin works around it and what would help.
 
-Updated for **Kiosk Satellite 2026.10.31**. Most of the original list was closed by 2026.10.23, and the open gaps were last measured on that version. 2026.10.27 closed gap 11; the plugin code changed in 2026.10.24 to 2026.10.29 touches none of the others. Gap numbers never change, so a closed gap keeps its number and the numbering has holes.
+Updated for **Kiosk Satellite 2026.10.40**. 2026.10.39 closed gap 33 and 2026.10.40 closed gap 34. Most of the original list was closed by 2026.10.23, and the open gaps were last measured on that version. 2026.10.27 closed gap 11; the plugin code changed in 2026.10.24 to 2026.10.29 touches none of the others. Gap numbers never change, so a closed gap keeps its number and the numbering has holes.
 
 ## How to read this page
 
@@ -35,8 +35,6 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 30 | A fleet install cannot replace a repository install of the same plugin | Product | Low | Adding a plugin to a profile fails on kiosks that already had it |
 | 31 | The Community Plugins check fails on Windows | Tooling | Low (developers) | `community_plugins.py check` crashes before printing its results |
 | 32 | The dashboard picker leaves out Home Assistant's built-in pages | Product | Low | **Tap opens** and **Hide the bar on** cannot name Energy, Map or Logbook |
-| 33 | Plugins cannot launch an Android app | Product | Medium | An item cannot open a music, camera or thermostat app (navbar issue 4) |
-| 34 | A manifest cannot declare a minimum Kiosk Satellite version | Product | Medium | An update that needs a newer KS fails with a generic error instead of saying so |
 | 20 | A rejected manifest does not say which rule failed | Product, Tooling | Low (developers) | Install fails with `Invalid list setting` and no detail |
 
 ## Open gaps
@@ -211,29 +209,6 @@ These only affect plugin authors, but each cost hours the first time.
 **Workaround:** 0.18.0 adds an **Opens** choice, **Built-in page**, with a fixed list and an **Other** path. The list is ours, so a page Home Assistant adds later, or one from an integration, needs **Other**. **Tap opens** and **Hide the bar on** still take only dashboard views.
 
 **Suggestion:** Have `getDashboards` return the sidebar's built-in panels too, marked so a plugin can tell them apart, and list them in the `dashboard` picker. Both are available to the frontend as `hass.panels`.
-#### 33. Plugins cannot launch an Android app
-
-*Product.*
-
-**Need:** Open another Android app from a bar item or menu entry. A user asked for it (issue 4).
-
-**Today:** The remote API has `launchApp {package}` and `installedApps`, but the plugin docs say the read and control tables are the complete command allowlist, and neither command is in it. The only app command a plugin has is `showAppLauncher`, which opens KS's own launcher.
-
-**Workaround:** The **App launcher** kiosk action opens the launcher, and the user taps the app.
-
-**Suggestion:** Allow `launchApp` under `host.control` and `installedApps` under `host.read`. The list would suit the new `setSettingChoices` grouped choices, so a user picks an app by name instead of typing a package. Filed upstream as issue 1122.
-#### 34. A manifest cannot declare a minimum Kiosk Satellite version
-
-*Product.*
-
-**Need:** Use a feature that arrives in a specific KS build, such as grouped choices or launchApp, without breaking users on older builds.
-
-**Today:** The manifest has piVersion and minAndroidSdk only. On an older KS the new manifest is refused with a generic message, or a call throws at runtime. The installed release keeps running, but the user is not told why the update fails.
-
-**Workaround:** Say the required version in the README and changelog, and catch the runtime error and fall back.
-
-**Suggestion:** An optional minAppVersion in the manifest, checked at preview, install and update, with a message naming both versions. Filed upstream as issue 1140.
-
 #### 20. A rejected manifest does not say which rule failed
 
 *Product, Tooling.*
@@ -279,3 +254,5 @@ The KS plugin docs (`creating-plugins.md`, `overlays.md`, `ks-api.md`) already c
 | 18 | Settings could not depend on each other | `visibleWhen` | **Hide after** shows only while **Swipe to hide** is on, and each item shows only the fields its **Opens** choice needs |
 | 26 | A wrapped overlay was cut off when the UI scale was above 100% | 2026.10.30 sizes the window with the unscaled pixel ratio | The workaround in the resize gate stays for older versions and never triggers on 2026.10.30 and newer |
 | 28 | A fleet-synced plugin could not be sized per kiosk | 2026.10.30: plugins follow each kiosk's **Scale UI** (upstream issue 1037) | **Size** is a fleet-wide multiplier on top of each kiosk's Scale UI |
+| 33 | Plugins could not launch an Android app | `launchApp` and `getLauncherApps` (2026.10.39, upstream issue 1122) | **App** items and entries pick from the App Launcher's apps with plugin choices and open them |
+| 34 | A manifest could not declare a minimum Kiosk Satellite version | `minAppVersion` (2026.10.40, upstream issue 1140) | The manifest says 2026.10.39, so an older kiosk refuses the update and keeps the version it has |

@@ -55,6 +55,53 @@ public final class NavbarTest {
         rejects(() -> NavTarget.action("Dance"));
         check(NavTarget.camera(CAM).matchPath() == null);
         panels();
+        apps();
+    }
+
+    private static void apps() {
+        NavTarget spotify = NavTarget.app(" com.spotify.music ");
+        eq(NavTarget.Kind.APP, spotify.kind);
+        eq("com.spotify.music", spotify.value);
+        eq("launchApp", spotify.command().name);
+        eq("com.spotify.music", spotify.command().arguments.get("package"));
+        check(spotify.matchPath() == null);
+        check(!spotify.isPage());
+        rejects(() -> NavTarget.app(""));
+        rejects(() -> NavTarget.app("spotify"));
+        rejects(() -> NavTarget.app("com.spotify.music; rm"));
+        Map<String, Object> row = new HashMap<>();
+        row.put("label", "Spotify");
+        row.put("opens", "App");
+        row.put("app", "com.spotify.music");
+        NavItem item = NavItem.fromRow(row, true);
+        eq(NavItem.Type.ACTION, item.type);
+        eq("mdi:application-outline", item.icon);
+        check(!item.matches("/lovelace"));
+        row.put("app", "");
+        rejects(() -> NavItem.fromRow(row, true));
+        // The picker lists what getLauncherApps returns: labelled, de-duplicated, package names only.
+        List<Object> launcher = new ArrayList<>();
+        launcher.add(appRow("com.spotify.music", "Spotify"));
+        launcher.add(appRow("com.spotify.music", "Spotify again"));
+        launcher.add(appRow("com.example.camera", ""));
+        launcher.add(appRow("not a package", "Broken"));
+        launcher.add("junk");
+        List<Map<String, Object>> choices = AppChoices.choices(launcher);
+        eq(2, choices.size());
+        eq("com.spotify.music", choices.get(0).get("id"));
+        eq("Spotify", choices.get(0).get("label"));
+        eq("com.spotify.music", choices.get(0).get("detail"));
+        eq("com.example.camera", choices.get(1).get("label"));
+        check(!choices.get(1).containsKey("detail"));
+        check(AppChoices.choices(null).isEmpty());
+        check(AppChoices.isAppKey("items.app") && AppChoices.isAppKey("items.entries.app") && !AppChoices.isAppKey("items.page"));
+    }
+
+    private static Map<String, Object> appRow(String pkg, String label) {
+        Map<String, Object> app = new LinkedHashMap<>();
+        app.put("package", pkg);
+        app.put("label", label);
+        return app;
     }
 
     private static void panels() {

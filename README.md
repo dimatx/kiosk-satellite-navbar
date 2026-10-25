@@ -26,7 +26,7 @@ A companion to [Action Bar for Kiosk Satellite](https://github.com/dimatx/kiosk-
 
 ## Installation
 
-Needs Kiosk Satellite **2026.10.23** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**. Calendar items need **2026.10.33** or newer.
+Needs Kiosk Satellite **2026.10.39** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**. Kiosk Satellite shows the requirement before it installs or updates, and an older release keeps running the version it has.
 
 ### Community Plugins (Recommended)
 
@@ -60,6 +60,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | Calendar | Default, Day, Week, Month or Schedule | Opens the kiosk's calendar on that view. Default uses the view picked under **Settings > Calendar** |
 | Menu | Up to 16 entries | Opens the menu beside the item, or centered on the bar when it is wider than the bar. More than 6 entries show as a grid |
 | Kiosk action | Music, Now playing, Screensaver, App launcher, Reload or Start page | Runs it |
+| App | One of the apps under **Settings > App Launcher > Apps** | Opens the app over the kiosk. Press **Refresh** beside the picker after adding apps. The list is empty while the App Launcher is off or Lockdown Mode is on |
 | Web address | An `https://` address | Loads it in the kiosk |
 
 | Editing a page item | Editing a menu |

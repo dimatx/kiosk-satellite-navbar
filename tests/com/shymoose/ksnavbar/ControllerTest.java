@@ -24,6 +24,7 @@ public final class ControllerTest {
         statusRecovery();
         stoppedSession();
         layoutBounds();
+        appChoices();
         System.out.println("ControllerTest: " + checks + " checks passed");
     }
 
@@ -173,6 +174,47 @@ public final class ControllerTest {
         check(replacement.status.isEmpty(), "new session starts clean");
     }
 
+    private static void appChoices() {
+        Fixture f = new Fixture(0);
+        List<Object> apps = new ArrayList<>();
+        Map<String, Object> app = new HashMap<>();
+        app.put("package", "com.spotify.music");
+        app.put("label", "Spotify");
+        apps.add(app);
+        // The list is made at start, with no run to report to.
+        f.host.reply("getLauncherApps", true, apps, null);
+        check(f.host.listed.get("items.app") == 1 && f.host.listed.get("items.entries.app") == 1, "apps listed for both pickers at start");
+        check(f.host.results.isEmpty(), "a start listing has no run to end");
+        // A Refresh press names its run and gets the outcome.
+        f.plugin.onEvent("settings.choices", refresh("items.app", "r1"));
+        f.host.reply("getLauncherApps", true, apps, null);
+        check("r1:success:Found 1 app.".equals(f.host.results.get(0)), "refresh reports what it found");
+        f.plugin.onEvent("settings.choices", refresh("items.entries.app", "r2"));
+        f.host.reply("getLauncherApps", true, new ArrayList<Object>(), null);
+        check(f.host.results.get(1).startsWith("r2:success:No apps are listed"), "an empty launcher says where to add apps");
+        f.plugin.onEvent("settings.choices", refresh("items.app", "r3"));
+        f.host.reply("getLauncherApps", false, null, "launcher off");
+        check("r3:error:Could not list apps: launcher off".equals(f.host.results.get(2)), "a failed listing ends the run with the reason");
+        // Another setting's refresh is not ours.
+        f.plugin.onEvent("settings.choices", refresh("other", "r4"));
+        check(f.host.replies.get("getLauncherApps").isEmpty(), "other settings are left alone");
+        // A tap launches the app, and a refusal is shown.
+        f.plugin.taps.onTarget(NavTarget.app("com.spotify.music"));
+        f.host.reply("launchApp", true, null, null);
+        f.clock.flush();
+        check(f.host.status.isEmpty(), "launching an app leaves no error");
+        f.plugin.taps.onTarget(NavTarget.app("com.spotify.music"));
+        f.host.reply("launchApp", false, null, "not in the launcher");
+        f.clock.flush();
+        check(f.host.status.contains("not in the launcher") && f.host.error, "a refused launch is shown");
+    }
+
+    private static Map<String, Object> refresh(String key, String run) {
+        Map<String, Object> payload = map("key", key);
+        payload.put("run", run);
+        return payload;
+    }
+
     private static void layoutBounds() {
         for (int available : new int[] {240, 320, 480, 800}) {
             for (float scale : new float[] {.8f, 1f, 1.4f}) {
@@ -292,6 +334,10 @@ public final class ControllerTest {
         }
         public void hideOverlay(String key) { if ("menu".equals(key)) menu = false; }
         public void setContentInsets(int l, int t, int r, int b) {}
+        final Map<String, Integer> listed = new HashMap<>();
+        final List<String> results = new ArrayList<>();
+        public void setSettingChoices(String key, List<Map<String, Object>> choices) { listed.put(key, choices.size()); }
+        public boolean setupResult(String run, String state, String message) { results.add(run + ":" + state + ":" + message); return true; }
         public void status(String message, boolean error) { this.status = message; this.error = error; }
         public void showWindow(String title, String message, String button) {}
         public void hideWindow() {}

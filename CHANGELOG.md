@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.19.0
+
+- An item or menu entry can open an **App**, picked from the apps in the kiosk's App Launcher (issue 4). Needs Kiosk Satellite 2026.10.39 or newer, which this release now declares with minAppVersion.
+
 ## 0.18.0
 
 - An item or menu entry can open a **Built-in page** that no dashboard list shows: Energy, Map, Logbook, History, To-do or Media, or any other path under **Other** (issue 3). The item stays lit on the page's tabs.
