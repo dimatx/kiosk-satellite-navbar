@@ -123,7 +123,7 @@ class ManifestSchemaTest(unittest.TestCase):
     def test_commands_and_capabilities(self):
         for command in MANIFEST['commands']:
             self.assertRegex(command['id'], r'^[a-z][a-zA-Z0-9]*$')
-        self.assertEqual(set(MANIFEST['capabilities']), {'overlay', 'host.read', 'host.control'})
+        self.assertEqual(set(MANIFEST['capabilities']), {'overlay', 'host.read', 'host.control', 'ha'})
         self.assertGreaterEqual(MANIFEST['minAndroidSdk'], 26)
 
 

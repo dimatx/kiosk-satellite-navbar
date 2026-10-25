@@ -18,7 +18,7 @@ final class IconGuess {
         {"mdi:garage", "garage", "carport"},
         {"mdi:road-variant", "driveway"},
         {"mdi:road", "street", "road", "sidewalk"},
-        {"mdi:doorbell", "doorbell"},
+        {"mdi:doorbell-video", "doorbell", "klingel", "türklingel"},
         {"mdi:door", "porch", "front door", "back door", "door", "entry", "entrance", "foyer", "mudroom"},
         {"mdi:gate", "gate"},
         {"mdi:patio-heater", "patio"},

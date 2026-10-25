@@ -8,7 +8,7 @@ import java.util.Map;
 
 /** Where a navbar item goes: a dashboard view, a built-in page, a camera view, the calendar, a kiosk action or a web address. */
 final class NavTarget {
-    enum Kind { PAGE, PANEL, URL, APP, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
+    enum Kind { PAGE, PANEL, URL, APP, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME, DOORBELL }
 
     /** The Kiosk action choices in settings, in the order they are offered. */
     static final String[] ACTIONS = {"Music", "Now playing", "Screensaver", "App launcher", "Reload", "Start page"};
@@ -122,6 +122,15 @@ final class NavTarget {
         return new NavTarget(Kind.URL, text);
     }
 
+    /** Opens the UniFi Protect doorbell overlay. Optional specific button entity, or empty to auto-detect. */
+    static NavTarget doorbell(String button) {
+        return new NavTarget(Kind.DOORBELL, button == null ? "" : button.trim());
+    }
+
+    static NavTarget doorbell() {
+        return doorbell("");
+    }
+
     /** One of {@link #ACTIONS}. */
     static NavTarget action(String name) {
         String text = name == null ? "" : name.trim();
@@ -174,6 +183,7 @@ final class NavTarget {
             case APPS: return new Command("showAppLauncher", Collections.<String, Object>emptyMap());
             case RELOAD: return new Command("reload", Collections.<String, Object>emptyMap());
             case HOME: return new Command("loadStartUrl", Collections.<String, Object>emptyMap());
+            case DOORBELL: return new Command("haCall", args("domain", "button", "service", "press"));
             default: throw new IllegalStateException("Unhandled target " + kind);
         }
     }
@@ -181,6 +191,13 @@ final class NavTarget {
     private static Map<String, Object> args(String key, Object value) {
         Map<String, Object> map = new LinkedHashMap<>();
         map.put(key, value);
+        return map;
+    }
+
+    private static Map<String, Object> args(String k1, Object v1, String k2, Object v2) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(k1, v1);
+        map.put(k2, v2);
         return map;
     }
 }

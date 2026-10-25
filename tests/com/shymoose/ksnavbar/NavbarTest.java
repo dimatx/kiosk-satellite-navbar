@@ -56,6 +56,33 @@ public final class NavbarTest {
         check(NavTarget.camera(CAM).matchPath() == null);
         panels();
         apps();
+        doorbell();
+    }
+
+    private static void doorbell() {
+        NavTarget doorbell = NavTarget.doorbell();
+        eq(NavTarget.Kind.DOORBELL, doorbell.kind);
+        check(doorbell.value.isEmpty());
+        eq("haCall", doorbell.command().name);
+        eq("press", doorbell.command().arguments.get("service"));
+        check(doorbell.matchPath() == null);
+        check(!doorbell.isPage());
+
+        Map<String, Object> row = new HashMap<>();
+        row.put("label", "Klingel");
+        row.put("opens", "Doorbell");
+        NavItem item = NavItem.fromRow(row, true);
+        eq(NavItem.Type.ACTION, item.type);
+        eq("Klingel", item.label);
+        eq(NavTarget.Kind.DOORBELL, item.target.kind);
+        eq("mdi:doorbell-video", item.icon);
+
+        Map<String, Object> customRow = new HashMap<>();
+        customRow.put("label", "Klingel");
+        customRow.put("opens", "Doorbell");
+        customRow.put("doorbellButton", "button.custom_doorbell");
+        NavItem customItem = NavItem.fromRow(customRow, true);
+        eq("button.custom_doorbell", customItem.target.value);
     }
 
     private static void apps() {

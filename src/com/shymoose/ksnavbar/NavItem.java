@@ -13,6 +13,7 @@ final class NavItem {
     /** The Opens choices in settings, in the order they are offered. */
     static final String PAGE = "Page";
     static final String PANEL = "Built-in page";
+    static final String DOORBELL = "Doorbell";
     static final String CAMERA = "Camera view";
     static final String CALENDAR = "Calendar";
     static final String MENU = "Menu";
@@ -65,6 +66,7 @@ final class NavItem {
         switch (opens) {
             case PAGE: target = NavTarget.page(text(row, "page")); break;
             case PANEL: target = NavTarget.panel(text(row, "panel"), text(row, "panelPath")); break;
+            case DOORBELL: target = NavTarget.doorbell(text(row, "doorbellButton")); break;
             case CAMERA: target = NavTarget.camera(text(row, "camera")); break;
             case CALENDAR: target = NavTarget.calendar(text(row, "calendarView")); break;
             case ACTION: target = NavTarget.action(text(row, "action")); break;
@@ -120,6 +122,7 @@ final class NavItem {
     static String kindIcon(NavTarget.Kind kind) {
         switch (kind) {
             case CAMERA: return CAMERA_ICON;
+            case DOORBELL: return "mdi:doorbell-video";
             case CALENDAR: return "mdi:calendar-month";
             case MUSIC: return "mdi:music";
             case NOW_PLAYING: return "mdi:play-circle-outline";

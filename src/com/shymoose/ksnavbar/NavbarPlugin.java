@@ -72,6 +72,7 @@ public final class NavbarPlugin implements KioskPlugin {
     private volatile boolean userHidden;
     /** Kept outside the view so a rebuilt overlay comes back in the same state. */
     private volatile boolean collapsed;
+    private volatile String deviceName;
     private final AtomicBoolean rebuild = new AtomicBoolean();
     private final AtomicReference<NavViews.Root> root = new AtomicReference<>();
     /** Bumped by every tap that navigates and every session change, so stale results are dropped. */
@@ -136,6 +137,7 @@ public final class NavbarPlugin implements KioskPlugin {
         readDashboard();
         readCamera();
         readScreensaver();
+        readDevice();
         listApps(null);
     }
 
@@ -315,6 +317,21 @@ public final class NavbarPlugin implements KioskPlugin {
         } catch (RuntimeException error) {
             issue(current, "screensaver", "Could not read the screensaver state: " + error.getMessage());
         }
+    }
+
+    private void readDevice() {
+        PluginHost current = host;
+        if (current == null) return;
+        try {
+            current.executeCommand("getDeviceInfo", Collections.<String, Object>emptyMap(), (ok, data, error) -> {
+                if (ok && data instanceof Map) {
+                    Object name = ((Map<?, ?>) data).get("name");
+                    if (name instanceof String) {
+                        deviceName = ((String) name).trim();
+                    }
+                }
+            });
+        } catch (RuntimeException ignored) {}
     }
 
     /** Ask KS for the current page. Responses can race, so only the latest request is applied. */
@@ -577,6 +594,25 @@ public final class NavbarPlugin implements KioskPlugin {
         if (current == null) return;
         int revision = navigation.incrementAndGet();
         try {
+            if (target.kind == NavTarget.Kind.DOORBELL) {
+                String button = target.value.isEmpty() ? defaultDoorbellButton() : target.value;
+                Map<String, Object> message = new LinkedHashMap<>();
+                message.put("type", "call_service");
+                message.put("domain", "button");
+                message.put("service", "press");
+                Map<String, Object> targetMap = new LinkedHashMap<>();
+                targetMap.put("entity_id", button);
+                message.put("target", targetMap);
+                current.haCall(message, (ok, data, error) -> {
+                    main.post(() -> {
+                        if (host != current || navigation.get() != revision) return;
+                        if (ok) errors.remove("navigation");
+                        else errors.put("navigation", "Could not open " + describe(target) + (error == null ? "" : ": " + error));
+                        reportOnMain();
+                    });
+                });
+                return;
+            }
             NavTarget.Command command = target.command();
             current.executeCommand(command.name, command.arguments, (ok, data, error) -> {
                 main.post(() -> {
@@ -589,6 +625,15 @@ public final class NavbarPlugin implements KioskPlugin {
         } catch (RuntimeException error) {
             issue(current, "navigation", "Could not open " + describe(target) + ": " + error.getMessage());
         }
+    }
+
+    private String defaultDoorbellButton() {
+        String name = deviceName;
+        String prefix = name == null || name.trim().isEmpty() ? "walle_eg"
+            : name.trim().toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]+", "_");
+        while (prefix.startsWith("_")) prefix = prefix.substring(1);
+        while (prefix.endsWith("_")) prefix = prefix.substring(0, prefix.length() - 1);
+        return "button." + prefix + "_unifi_protect_doorbell_open_protect_doorbell";
     }
 
     /** Main thread. */

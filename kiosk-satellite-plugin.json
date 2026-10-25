@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "ks-navbar",
   "name": "Navbar",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "apiVersion": 1,
   "minAppVersion": "2026.10.39",
   "minAndroidSdk": 26,
@@ -14,7 +14,8 @@
   "capabilities": [
     "overlay",
     "host.read",
-    "host.control"
+    "host.control",
+    "ha"
   ],
   "settings": [
     {
@@ -112,6 +113,7 @@
           "options": [
             "Page",
             "Built-in page",
+            "Doorbell",
             "Camera view",
             "Calendar",
             "Menu",
@@ -158,6 +160,17 @@
           "visibleWhen": {
             "key": "panel",
             "equals": "Other"
+          }
+        },
+        {
+          "key": "doorbellButton",
+          "type": "entity",
+          "domain": "button",
+          "title": "Doorbell button",
+          "description": "The button that opens the Protect doorbell on this tablet. Leave empty to auto-detect.",
+          "visibleWhen": {
+            "key": "opens",
+            "equals": "Doorbell"
           }
         },
         {
@@ -264,6 +277,7 @@
               "options": [
                 "Page",
                 "Built-in page",
+                "Doorbell",
                 "Camera view",
                 "Calendar",
                 "Kiosk action",
@@ -309,6 +323,17 @@
               "visibleWhen": {
                 "key": "panel",
                 "equals": "Other"
+              }
+            },
+            {
+              "key": "doorbellButton",
+              "type": "entity",
+              "domain": "button",
+              "title": "Doorbell button",
+              "description": "The button that opens the Protect doorbell on this tablet. Leave empty to auto-detect.",
+              "visibleWhen": {
+                "key": "opens",
+                "equals": "Doorbell"
               }
             },
             {

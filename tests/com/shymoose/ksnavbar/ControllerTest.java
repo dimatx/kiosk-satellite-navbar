@@ -318,7 +318,13 @@ public final class ControllerTest {
         String status = "";
         boolean error;
         final List<OverlayFactory> menus = new ArrayList<>();
+        final List<Map<String, Object>> haCalls = new ArrayList<>();
         public void subscribe(String event) {}
+        @Override
+        public void haCall(Map<String, Object> message, CommandCallback callback) {
+            haCalls.add(message);
+            if (callback != null) callback.onResult(true, null, null);
+        }
         public void executeCommand(String name, Map<String, Object> args, CommandCallback callback) {
             replies.computeIfAbsent(name, key -> new ArrayList<>()).add(callback);
         }
