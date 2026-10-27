@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.20.0
+
+- **Added** an **Any action** choice for **Opens**. Pick any action with the same chooser as Gestures, including another plugin's commands such as a doorbell view. It works on items and menu entries and needs no extra permission.
+- **Changed** empty icons are no longer saved back into the settings. The bar still draws the icon it guesses from the label.
+- **Changed** built-in page rows no longer show a subtitle, because rows allow four subtitle fields.
+- Needs Kiosk Satellite 2026.10.42 or newer.
+
 ## 0.19.0
 
 - An item or menu entry can open an **App**, picked from the apps in the kiosk's App Launcher (issue 4). Needs Kiosk Satellite 2026.10.39 or newer, which this release now declares with minAppVersion.

@@ -2,9 +2,9 @@
   "schemaVersion": 1,
   "id": "ks-navbar",
   "name": "Navbar",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "apiVersion": 1,
-  "minAppVersion": "2026.10.39",
+  "minAppVersion": "2026.10.42",
   "minAndroidSdk": 26,
   "entryClass": "com.shymoose.ksnavbar.NavbarPlugin",
   "description": "A navigation bar for your dashboards that highlights the page you're on.",
@@ -92,9 +92,9 @@
         "title": "label",
         "subtitle": [
           "page",
-          "panel",
           "action",
-          "url"
+          "url",
+          "anyAction"
         ],
         "icon": "icon"
       },
@@ -117,6 +117,7 @@
             "Menu",
             "Kiosk action",
             "App",
+            "Any action",
             "Web address"
           ]
         },
@@ -218,6 +219,17 @@
           }
         },
         {
+          "key": "anyAction",
+          "type": "action",
+          "title": "Action",
+          "required": true,
+          "description": "What a tap runs, such as a script or another plugin's action.",
+          "visibleWhen": {
+            "key": "opens",
+            "equals": "Any action"
+          }
+        },
+        {
           "key": "url",
           "type": "string",
           "title": "Web address",
@@ -244,9 +256,9 @@
             "title": "label",
             "subtitle": [
               "page",
-              "panel",
               "action",
-              "url"
+              "url",
+              "anyAction"
             ],
             "icon": "icon"
           },
@@ -268,6 +280,7 @@
                 "Calendar",
                 "Kiosk action",
                 "App",
+                "Any action",
                 "Web address"
               ]
             },
@@ -366,6 +379,17 @@
               "visibleWhen": {
                 "key": "opens",
                 "equals": "App"
+              }
+            },
+            {
+              "key": "anyAction",
+              "type": "action",
+              "title": "Action",
+              "required": true,
+              "description": "What a tap runs, such as a script or another plugin's action.",
+              "visibleWhen": {
+                "key": "opens",
+                "equals": "Any action"
               }
             },
             {

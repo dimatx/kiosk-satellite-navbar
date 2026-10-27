@@ -141,7 +141,6 @@ public final class NavbarPlugin implements KioskPlugin {
 
     @Override
     public synchronized void configure(Map<String, Object> settings) {
-        fillIcons(settings);
         NavConfig previous = config;
         NavConfig next = NavConfig.parse(settings);
         config = next;
@@ -154,26 +153,6 @@ public final class NavbarPlugin implements KioskPlugin {
         sync();
         if (next.autoCollapse != previous.autoCollapse) main.post(this::scheduleAutoCollapse);
         report();
-    }
-
-    /**
-     * Saves the icon the bar picked for any item left without one, so the settings page shows it.
-     * KS does not call configure for the save, and the bar already draws the same picks, so nothing
-     * else changes. The next configure finds nothing left to fill.
-     */
-    private void fillIcons(Map<String, Object> settings) {
-        PluginHost current = host;
-        if (current == null || settings == null) return;
-        List<Map<String, Object>> filled = NavItem.withIcons(settings.get("items"));
-        if (filled == null) return;
-        Map<String, Object> values = new java.util.LinkedHashMap<>(settings);
-        values.put("items", filled);
-        try {
-            current.saveSettings(values);
-        } catch (RuntimeException error) {
-            // The bar still draws the picked icons. Only the settings page keeps showing them empty.
-            current.log("Could not save the picked icons: " + error.getMessage());
-        }
     }
 
     @Override
@@ -577,17 +556,23 @@ public final class NavbarPlugin implements KioskPlugin {
         if (current == null) return;
         int revision = navigation.incrementAndGet();
         try {
-            NavTarget.Command command = target.command();
-            current.executeCommand(command.name, command.arguments, (ok, data, error) -> {
+            PluginHost.CommandCallback done = (ok, data, error) -> {
                 main.post(() -> {
                     if (host != current || navigation.get() != revision) return;
                     if (ok && !Boolean.FALSE.equals(data)) errors.remove("navigation");
-                    else errors.put("navigation", "Could not open " + describe(target) + (error == null ? "" : ": " + error));
+                    else errors.put("navigation", failure(target) + (error == null ? "" : ": " + error));
                     reportOnMain();
                 });
-            });
+            };
+            if (target.runsChosenAction()) {
+                // Kiosk Satellite reads the action from the saved settings, so the plugin only names the row.
+                current.runAction(target.value, done);
+            } else {
+                NavTarget.Command command = target.command();
+                current.executeCommand(command.name, command.arguments, done);
+            }
         } catch (RuntimeException error) {
-            issue(current, "navigation", "Could not open " + describe(target) + ": " + error.getMessage());
+            issue(current, "navigation", failure(target) + ": " + error.getMessage());
         }
     }
 
@@ -600,6 +585,10 @@ public final class NavbarPlugin implements KioskPlugin {
         markMenu(-1);
         scheduleAutoCollapse();
     }
+    private static String failure(NavTarget target) {
+        return target.runsChosenAction() ? "Could not run the action" : "Could not open " + describe(target);
+    }
+
     private static String describe(NavTarget target) {
         return target.value.isEmpty() ? target.kind.name().toLowerCase(java.util.Locale.ROOT) : target.value;
     }

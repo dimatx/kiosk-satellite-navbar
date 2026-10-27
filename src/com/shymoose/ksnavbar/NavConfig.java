@@ -94,7 +94,7 @@ final class NavConfig {
             String label = NavItem.text(rows.get(i), "label");
             String name = label.isEmpty() ? "Item " + (i + 1) : label;
             try {
-                items.add(NavItem.fromRow(rows.get(i), true));
+                items.add(NavItem.fromRow(rows.get(i), true, "items." + i));
             } catch (IllegalArgumentException error) {
                 problems.add(name + ": " + error.getMessage());
             }

@@ -19,6 +19,7 @@ final class NavItem {
     static final String ACTION = "Kiosk action";
     static final String WEB = "Web address";
     static final String APP = "App";
+    static final String ANY = "Any action";
 
     static final String DEFAULT_ICON = "mdi:circle-outline";
     static final String CAMERA_ICON = "mdi:cctv";
@@ -50,13 +51,22 @@ final class NavItem {
      * every field, including hidden ones, so only the fields {@code opens} selects are read.
      */
     static NavItem fromRow(Map<?, ?> row, boolean allowMenu) {
+        return fromRow(row, allowMenu, null);
+    }
+
+    /**
+     * Like {@link #fromRow(Map, boolean)}, with {@code path} naming the row in the saved settings, such as
+     * {@code items.2} or {@code items.2.entries.1}. An Any action row needs it to name its action field.
+     */
+    static NavItem fromRow(Map<?, ?> row, boolean allowMenu, String path) {
         String label = text(row, "label");
         if (label.isEmpty()) throw new IllegalArgumentException("needs a label");
         String opens = text(row, "opens");
         if (opens.isEmpty()) opens = PAGE;
         if (MENU.equals(opens)) {
             if (!allowMenu) throw new IllegalArgumentException("a menu entry cannot open another menu");
-            NavItem menu = menu(label, text(row, "icon"), text(row, "iconSelected"), rows(row.get("entries")));
+            NavItem menu = menu(label, text(row, "icon"), text(row, "iconSelected"), rows(row.get("entries")),
+                path == null ? null : path + ".entries");
             String tapPage = text(row, "tapPage");
             if (tapPage.isEmpty()) return menu;
             return new NavItem(Type.MENU, menu.label, menu.icon, menu.iconSelected, NavTarget.page(tapPage), menu.children);
@@ -70,6 +80,7 @@ final class NavItem {
             case ACTION: target = NavTarget.action(text(row, "action")); break;
             case WEB: target = NavTarget.url(text(row, "url")); break;
             case APP: target = NavTarget.app(text(row, "app")); break;
+            case ANY: target = NavTarget.any(path == null ? null : path + ".anyAction", row.get("anyAction")); break;
             default: throw new IllegalArgumentException("unknown Opens choice '" + opens + "'");
         }
         return leaf(label, text(row, "icon"), text(row, "iconSelected"), target);
@@ -85,12 +96,18 @@ final class NavItem {
 
     /** A menu of entry rows. */
     static NavItem menu(String label, String icon, String selectedIcon, List<Map<?, ?>> entries) {
+        return menu(label, icon, selectedIcon, entries, null);
+    }
+
+    /** A menu of entry rows, {@code entriesPath} naming the entries list in the saved settings, such as {@code items.2.entries}. */
+    static NavItem menu(String label, String icon, String selectedIcon, List<Map<?, ?>> entries, String entriesPath) {
         String[] icons = icons(icon, selectedIcon, fallbackIcon(label, DEFAULT_ICON));
         List<NavItem> children = new ArrayList<>();
-        for (Map<?, ?> entry : entries) {
+        for (int index = 0; index < entries.size(); index++) {
+            Map<?, ?> entry = entries.get(index);
             String childLabel = text(entry, "label");
             try {
-                children.add(fromRow(entry, false));
+                children.add(fromRow(entry, false, entriesPath == null ? null : entriesPath + "." + index));
             } catch (IllegalArgumentException error) {
                 throw new IllegalArgumentException((childLabel.isEmpty() ? "an entry" : childLabel) + " " + error.getMessage());
             }
@@ -129,6 +146,7 @@ final class NavItem {
             case HOME: return "mdi:home-outline";
             case URL: return "mdi:web";
             case APP: return "mdi:application-outline";
+            case ANY: return "mdi:gesture-tap-button";
             default: return DEFAULT_ICON;
         }
     }
@@ -163,48 +181,6 @@ final class NavItem {
         String normal = icon == null || icon.trim().isEmpty() ? fallback : icon.trim();
         String selected = selectedIcon == null || selectedIcon.trim().isEmpty() ? normal : selectedIcon.trim();
         return new String[] {normal, selected};
-    }
-
-    /**
-     * The Items rows with every empty Icon filled in with the icon the bar draws for it, picked from
-     * the label or what the item opens. Saved back, so the settings page shows the icon in use
-     * instead of an empty picker. Null when nothing was empty.
-     */
-    static List<Map<String, Object>> withIcons(Object items) {
-        boolean changed = false;
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (Map<?, ?> row : rows(items)) {
-            Map<String, Object> copy = copy(row);
-            if (row.get("entries") instanceof List) {
-                List<Map<String, Object>> entries = new ArrayList<>();
-                for (Map<?, ?> entry : rows(row.get("entries"))) {
-                    Map<String, Object> entryCopy = copy(entry);
-                    changed |= fillIcon(entryCopy, false);
-                    entries.add(entryCopy);
-                }
-                copy.put("entries", entries);
-            }
-            changed |= fillIcon(copy, true);
-            result.add(copy);
-        }
-        return changed ? result : null;
-    }
-
-    private static boolean fillIcon(Map<String, Object> row, boolean allowMenu) {
-        if (!text(row, "icon").isEmpty() || text(row, "label").isEmpty()) return false;
-        try {
-            row.put("icon", fromRow(row, allowMenu).icon);
-            return true;
-        } catch (IllegalArgumentException unfinished) {
-            // An item that cannot be used yet keeps its empty icon until it is fixed.
-            return false;
-        }
-    }
-
-    private static Map<String, Object> copy(Map<?, ?> row) {
-        Map<String, Object> copy = new java.util.LinkedHashMap<>();
-        for (Map.Entry<?, ?> entry : row.entrySet()) copy.put(String.valueOf(entry.getKey()), entry.getValue());
-        return copy;
     }
 
     /** The rows of a list setting. Anything that is not a list of maps reads as empty. */

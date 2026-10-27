@@ -27,7 +27,7 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 27 | Plugin overlays are garbled with Impeller on Mesa and minigbm | Product | Medium | On an x86 kiosk with an Intel GPU the bar is unreadable stripes until **Legacy renderer** is turned on |
 | 25 | An overlay cannot change layer without being rebuilt | Product | Medium | A pause when a camera view opens or closes |
 | 22 | A list row's subtitle shows raw picker values | Product | Medium | Items and hidden pages read `navbar-demo/lights` instead of *Navbar demo / Lights* |
-| 23 | An icon field cannot show a fallback | Product | Medium | An empty icon looks unset, so the plugin fills it in on the user's behalf |
+| 23 | An icon field cannot show a fallback | Product | Medium | An empty icon looks unset, and the plugin can no longer fill it in |
 | 21 | A list row cannot summarize a nested list | Product | Low | A menu item's row does not say what the menu holds |
 | 24 | A list setting's description shows under the add row | Product | Low | **Hide the bar on** explains itself after its button |
 | 19 | A local ZIP cannot replace a repository install | Product | Medium (developers) | Testing a build means uninstalling, which loses settings |
@@ -118,7 +118,7 @@ The 2026.10.23 pickers and lists made the navbar configurable without typing pat
 
 **Today:** An empty `icon` field reads *Choose an icon*, even though the bar draws an icon guessed from the label. Users read that as "no icon".
 
-**Workaround:** The plugin saves the guessed icon back with `saveSettings`. That turns a choice the plugin made into one the user appears to have made: renaming *Garage* to *Driveway* later keeps the garage icon.
+**Workaround:** None since 0.20.0. The plugin used to save the guessed icon back with `saveSettings`, but KS keeps a list that holds an `action` field exactly as the user saved it, so that no longer persists. An empty icon stays empty on the settings page while the bar draws the guess.
 
 **Suggestion:** Let a plugin supply a placeholder for an empty `icon` field, such as a `placeholderIcon` it can update at runtime, shown greyed in the picker until the user chooses one.
 

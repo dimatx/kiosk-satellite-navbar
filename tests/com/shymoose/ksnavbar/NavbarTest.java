@@ -56,6 +56,53 @@ public final class NavbarTest {
         check(NavTarget.camera(CAM).matchPath() == null);
         panels();
         apps();
+        anyActions();
+    }
+
+    private static void anyActions() {
+        Map<String, Object> picked = new HashMap<>();
+        picked.put("type", "plugin_action");
+        picked.put("plugin", "protect-camera");
+        picked.put("command", "show");
+        Map<String, Object> row = new HashMap<>();
+        row.put("label", "Quick action");
+        row.put("opens", "Any action");
+        row.put("anyAction", picked);
+        // The plugin only names the field. Kiosk Satellite reads the action from the saved settings.
+        NavItem item = NavItem.fromRow(row, true, "items.2");
+        eq(NavItem.Type.ACTION, item.type);
+        eq(NavTarget.Kind.ANY, item.target.kind);
+        eq("items.2.anyAction", item.target.value);
+        check(item.target.runsChosenAction() && !item.target.isPage());
+        check(item.target.matchPath() == null && !item.matches("/lovelace"));
+        eq("mdi:gesture-tap-button", item.icon);
+        boolean refused = false;
+        try { item.target.command(); } catch (IllegalStateException expected) { refused = true; }
+        check(refused);
+        // The row index is the saved list index, and a menu entry adds the entries list and its own index.
+        List<Map<?, ?>> entries = new ArrayList<>();
+        entries.add(page("Home", "a/home", ""));
+        entries.add(row);
+        NavItem menu = NavItem.menu("More", "", "", entries, "items.4.entries");
+        eq("items.4.entries.1.anyAction", menu.children.get(1).target.value);
+        Map<String, Object> menuRow = menuRow("More", "", page("Home", "a/home", ""), row);
+        eq("items.0.entries.1.anyAction", NavItem.fromRow(menuRow, true, "items.0").children.get(1).target.value);
+        // Nothing picked yet, an action with nothing in it, or no place in the settings to name: not usable.
+        row.put("anyAction", new HashMap<String, Object>());
+        rejects(() -> NavItem.fromRow(row, true, "items.2"));
+        row.remove("anyAction");
+        rejects(() -> NavItem.fromRow(row, true, "items.2"));
+        row.put("anyAction", picked);
+        rejects(() -> NavItem.fromRow(row, true));
+        // A menu is still a menu. Menu entries cannot hold another menu.
+        eq(NavItem.Type.MENU, NavItem.fromRow(menuRow, true, "items.0").type);
+        // The parser gives each saved row its own path, even when an earlier row is unusable.
+        Map<String, Object> settings = new HashMap<>();
+        settings.put("items", list(page("", "a/x", ""), row));
+        NavConfig config = NavConfig.parse(settings);
+        eq(1, config.items.size());
+        eq("items.1.anyAction", config.items.get(0).target.value);
+        check(config.problems.size() == 1);
     }
 
     private static void apps() {
@@ -251,21 +298,9 @@ public final class NavbarTest {
         plain.put("tapPage", "a/other");
         check(!NavItem.fromRow(plain, true).longPressMenu());
         eq("a/home", NavItem.fromRow(plain, true).target.value);
-        // Empty icons are filled in with the icon the bar draws, so the settings page shows them.
-        List<Object> withEmpty = list(page("Garage", "a/g", ""), page("Kept", "a/k", "mdi:star"),
-            menuRow("Cams", "", camera("Zork", ""), camera("Driveway", "")), page("", "a/x", ""), page("Bad", "", ""));
-        List<Map<String, Object>> filledRows = NavItem.withIcons(withEmpty);
-        eq("mdi:garage", filledRows.get(0).get("icon"));
-        eq("mdi:star", filledRows.get(1).get("icon"));
-        eq(NavItem.DEFAULT_ICON, filledRows.get(2).get("icon"));
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> filledEntries = (List<Map<String, Object>>) filledRows.get(2).get("entries");
-        eq(NavItem.CAMERA_ICON, filledEntries.get(0).get("icon"));
-        eq("mdi:road-variant", filledEntries.get(1).get("icon"));
-        eq("", filledRows.get(3).get("icon"));
-        eq("", filledRows.get(4).get("icon"));
-        check(NavItem.withIcons(filledRows) == null);
-        check(NavItem.withIcons(null) == null);
+        // An empty icon is drawn as the one the bar picks, and nothing is saved back: KS keeps a list that holds an action field as the user saved it.
+        eq("mdi:garage", NavItem.fromRow(page("Garage", "a/g", ""), true).icon);
+        eq("mdi:star", NavItem.fromRow(page("Kept", "a/k", "mdi:star"), true).icon);
         // KS fills in every field, including hidden ones. Only the fields Opens selects count.
         Map<String, Object> filled = page("Lights", "panel/lights", "");
         filled.put("camera", "");

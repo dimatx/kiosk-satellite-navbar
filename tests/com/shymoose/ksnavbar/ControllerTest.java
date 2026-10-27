@@ -25,6 +25,7 @@ public final class ControllerTest {
         stoppedSession();
         layoutBounds();
         appChoices();
+        chosenActions();
         System.out.println("ControllerTest: " + checks + " checks passed");
     }
 
@@ -209,6 +210,39 @@ public final class ControllerTest {
         check(f.host.status.contains("not in the launcher") && f.host.error, "a refused launch is shown");
     }
 
+    private static void chosenActions() {
+        Fixture f = new Fixture(0);
+        // A tap runs the action the user picked, by naming where it sits in the saved settings.
+        NavTarget doorbell = NavTarget.any("items.2.anyAction", map("type", "plugin_action"));
+        f.plugin.taps.onTarget(doorbell);
+        check(f.host.ran.equals(Collections.singletonList("items.2.anyAction")), "the row's action field is named");
+        check(f.host.replies.get("haNavigate") == null && f.host.replies.get("launchApp") == null, "no command of the plugin's own runs");
+        f.host.finishAction(true, null);
+        f.clock.flush();
+        check(f.host.status.isEmpty(), "a finished action leaves no error");
+        // A failure says why, and a later success clears it.
+        f.plugin.taps.onTarget(doorbell);
+        f.host.finishAction(false, "Lockdown Mode is on");
+        f.clock.flush();
+        check(f.host.status.contains("Could not run the action") && f.host.status.contains("Lockdown Mode is on") && f.host.error, "a refused action is shown");
+        f.plugin.taps.onTarget(doorbell);
+        f.host.finishAction(true, null);
+        f.clock.flush();
+        check(f.host.status.isEmpty() && !f.host.error, "a retry that works clears the error");
+        // A tap that has been replaced by a newer one does not report.
+        f.plugin.taps.onTarget(doorbell);
+        f.plugin.taps.onTarget(doorbell);
+        f.host.finishAction(false, "stale");
+        f.host.finishAction(true, null);
+        f.clock.flush();
+        check(f.host.status.isEmpty(), "a stale action result is ignored");
+        // A Kiosk Satellite without action settings says so, and the bar goes on working.
+        f.host.actionsUnavailable = true;
+        f.plugin.taps.onTarget(doorbell);
+        f.clock.flush();
+        check(f.host.status.contains("Action settings are unavailable") && f.host.error, "an old host is explained");
+    }
+
     private static Map<String, Object> refresh(String key, String run) {
         Map<String, Object> payload = map("key", key);
         payload.put("run", run);
@@ -334,6 +368,15 @@ public final class ControllerTest {
         }
         public void hideOverlay(String key) { if ("menu".equals(key)) menu = false; }
         public void setContentInsets(int l, int t, int r, int b) {}
+        final List<String> ran = new ArrayList<>();
+        private final List<CommandCallback> actionCallbacks = new ArrayList<>();
+        boolean actionsUnavailable;
+        public void runAction(String setting, CommandCallback callback) {
+            if (actionsUnavailable) throw new UnsupportedOperationException("Action settings are unavailable");
+            ran.add(setting);
+            actionCallbacks.add(callback);
+        }
+        void finishAction(boolean ok, String error) { actionCallbacks.remove(0).onResult(ok, null, error); }
         final Map<String, Integer> listed = new HashMap<>();
         final List<String> results = new ArrayList<>();
         public void setSettingChoices(String key, List<Map<String, Object>> choices) { listed.put(key, choices.size()); }

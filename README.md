@@ -26,7 +26,7 @@ A companion to [Action Bar for Kiosk Satellite](https://github.com/dimatx/kiosk-
 
 ## Installation
 
-Needs Kiosk Satellite **2026.10.39** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**. Kiosk Satellite shows the requirement before it installs or updates, and an older release keeps running the version it has.
+Needs Kiosk Satellite **2026.10.42** or newer. On **2026.10.30** and newer the bar follows each kiosk's **Scale UI**. Kiosk Satellite shows the requirement before it installs or updates, and an older release keeps running the version it has.
 
 ### Community Plugins (Recommended)
 
@@ -56,6 +56,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | --- | --- | --- |
 | Page | A dashboard view | Opens the view. The item lights up while it's shown |
 | Built-in page | Energy, Map, Logbook, History, To-do, Media, or Other with a path | Opens a page Home Assistant provides itself. The item stays lit on its tabs, such as Energy's Electricity and Gas |
+| Any action | Anything you can pick in Gestures, such as another plugin's command | Runs the action you choose, with no code in this plugin. Use it to open another plugin's view, for example a doorbell camera |
 | Camera view | One of the kiosk's camera views | Opens the camera view |
 | Calendar | Default, Day, Week, Month or Schedule | Opens the kiosk's calendar on that view. Default uses the view picked under **Settings > Calendar** |
 | Menu | Up to 16 entries | Opens the menu beside the item, or centered on the bar when it is wider than the bar. More than 6 entries show as a grid |
@@ -67,7 +68,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | :---: | :---: |
 | <img src="docs/images/editor-page.png" alt="Editing a page item" width="380"> | <img src="docs/images/editor-menu.png" alt="Editing a menu item and its entries" width="380"> |
 
-- **Icons.** Leave an icon empty and one is picked from the label, then filled in for you: *Garage* gets a garage, *Driveway* a road, *Living room* a sofa. **Selected icon** is shown while the item's page is open, often the filled version.
+- **Icons.** Leave an icon empty and one is picked from the label, and the bar draws it: *Garage* gets a garage, *Driveway* a road, *Living room* a sofa. **Selected icon** is shown while the item's page is open, often the filled version.
 - **Tap opens.** On a menu item, pick a page here and a tap opens that page while a long press opens the menu. Leave it empty and a tap opens the menu.
 - **Order.** Drag rows by their handle to reorder items or menu entries. A bar holds up to 16 items.
 - **Smaller screens.** If the bar does not fit, scroll along it to reach the remaining items. Menu grids use fewer columns when space is limited, and tall menus scroll.

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = json.loads((ROOT / 'kiosk-satellite-plugin.json').read_text(encoding='utf-8'))
 SOURCES = {name: (ROOT / f'src/com/shymoose/ksnavbar/{name}.java').read_text(encoding='utf-8')
            for name in ('NavConfig', 'NavItem', 'NavTarget')}
-TYPES = {'string', 'secret', 'boolean', 'number', 'color', 'select', 'entity', 'icon', 'dashboard', 'cameraView', 'list'}
+TYPES = {'string', 'secret', 'boolean', 'number', 'color', 'select', 'entity', 'icon', 'dashboard', 'cameraView', 'list', 'action'}
 CONDITION_TESTS = {'equals', 'notEquals', 'notEmpty'}
 
 
@@ -30,6 +30,10 @@ def check_fields(case, fields, nested=0):
                 case.assertEqual((field['default'] - field['min']) % field['step'], 0)
             if field['type'] == 'string' and 'default' in field:
                 case.assertLessEqual(len(field['default']), 512)
+            if field['type'] == 'action':
+                # Only the user picks an action, so a manifest may not choose one.
+                case.assertEqual(field.get('default', {}), {})
+                case.assertNotIn(field['key'], {f.get('visibleWhen', {}).get('key') for f in fields})
             condition = field.get('visibleWhen')
             if condition:
                 # The condition names a field declared earlier on the same level, with one test.
@@ -59,6 +63,13 @@ class ManifestSchemaTest(unittest.TestCase):
             self.assertIn('default', setting)
         check_fields(self, settings)
         self.assertLessEqual(len(json.dumps(next(s for s in settings if s['key'] == 'items')['default'])), 32 * 1024)
+
+    def test_action_settings_need_the_release_that_added_them(self):
+        def uses_action(fields):
+            return any(f['type'] == 'action' or (f['type'] == 'list' and uses_action(f['fields'])) for f in fields)
+        self.assertTrue(uses_action(MANIFEST['settings']))
+        version = tuple(int(part) for part in MANIFEST['minAppVersion'].split('.'))
+        self.assertGreaterEqual(version, (2026, 10, 42))
 
     def test_descriptions_are_sentences(self):
         # Kiosk Satellite's own settings describe each one in a sentence that ends with a period.

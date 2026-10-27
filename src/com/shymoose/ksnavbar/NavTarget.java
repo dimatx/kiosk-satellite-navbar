@@ -8,7 +8,7 @@ import java.util.Map;
 
 /** Where a navbar item goes: a dashboard view, a built-in page, a camera view, the calendar, a kiosk action or a web address. */
 final class NavTarget {
-    enum Kind { PAGE, PANEL, URL, APP, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
+    enum Kind { PAGE, PANEL, URL, APP, ANY, CAMERA, CALENDAR, MUSIC, NOW_PLAYING, SCREENSAVER, APPS, RELOAD, HOME }
 
     /** The Kiosk action choices in settings, in the order they are offered. */
     static final String[] ACTIONS = {"Music", "Now playing", "Screensaver", "App launcher", "Reload", "Start page"};
@@ -92,6 +92,23 @@ final class NavTarget {
         return text.matches("[A-Za-z][A-Za-z0-9_]*(\\.[A-Za-z][A-Za-z0-9_]*)+");
     }
 
+    /**
+     * Whatever action the user picked in the row's Action field, with the chooser Gestures uses. {@code path} is
+     * where that field sits in the saved settings, such as {@code items.2.anyAction}: Kiosk Satellite reads the
+     * action itself, so the plugin only names it. {@code chosen} is the field as {@code configure} saw it, an
+     * empty map while nothing is picked. Needs Kiosk Satellite 2026.10.42 or newer.
+     */
+    static NavTarget any(String path, Object chosen) {
+        if (path == null || path.isEmpty()) throw new IllegalArgumentException("has nowhere to run an action from");
+        if (!(chosen instanceof Map) || ((Map<?, ?>) chosen).isEmpty()) throw new IllegalArgumentException("pick an action");
+        return new NavTarget(Kind.ANY, path);
+    }
+
+    /** Whether a tap runs the user's action through {@code runAction}, not a command of the plugin's own. */
+    boolean runsChosenAction() {
+        return kind == Kind.ANY;
+    }
+
     /** A camera view ID, as the camera view picker stores it. */
     static NavTarget camera(String viewId) {
         String id = viewId == null ? "" : viewId.trim();
@@ -166,6 +183,7 @@ final class NavTarget {
             case PANEL: return new Command("haNavigate", args("path", value));
             case URL: return new Command("loadUrl", args("url", value));
             case APP: return new Command("launchApp", args("package", value));
+            case ANY: throw new IllegalStateException("An action the user chose runs through runAction");
             case CAMERA: return new Command("showCameraView", args("viewId", value));
             case CALENDAR: return new Command("openCalendar", value.isEmpty() ? Collections.<String, Object>emptyMap() : args("view", value));
             case MUSIC: return new Command("showMusicAssistant", Collections.<String, Object>emptyMap());
