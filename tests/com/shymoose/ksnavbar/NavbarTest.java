@@ -396,6 +396,13 @@ public final class NavbarTest {
         check(cfg.visibleAt("/panel/settings-2"));
         check(cfg.visibleAt("/panel/settings/sub"));
         check(!cfg.visibleAt("/lovelace/kiosk"));
+        // A bare page, such as a built-in one, also hides the bar on its sub-pages.
+        String bare = Paths.hideEntry("energy");
+        check(NavConfig.hides(bare, "/energy"));
+        check(NavConfig.hides(bare, "/energy/setup"));
+        check(!NavConfig.hides(bare, "/energy-2"));
+        check(!NavConfig.hides(Paths.hideEntry("/panel/settings"), "/panel/settings/sub"));
+        check(!NavConfig.hides(Paths.hideEntry("wall/0"), "/wall/1"));
 
         // While a camera view is open, the item that opens it lights up, not the page under it.
         check(cfg.overCameras);

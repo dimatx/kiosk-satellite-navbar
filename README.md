@@ -87,7 +87,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 | Hide after | Seconds without a tap before the bar hides. 0 keeps it visible |
 | Keep the dashboard clear | The dashboard ends above the bar instead of under it. On by default |
 | Show over camera views | Keep the bar on screen while a camera view is open, with a Close button. On by default |
-| Hide the bar on | Pages where the bar stays hidden, picked from your dashboards |
+| Hide the bar on | Pages where the bar stays hidden, picked from your dashboards and Home Assistant's own pages. A bare page such as `energy` also covers its sub-pages |
 
 <details>
 <summary><b>Left and right rails</b></summary>

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.20.1
+
+- **Fixed** **Hide the bar on** now covers a built-in page's sub-pages, so picking Energy also hides the bar on Energy's setup and Electricity tabs.
+- Kiosk Satellite 2026.10.43 lists Home Assistant's own pages in the page pickers, so **Hide the bar on** can name them. Older releases still need the **Built-in page** choice.
+
 ## 0.20.0
 
 - **Added** an **Any action** choice for **Opens**. Pick any action with the same chooser as Gestures, including another plugin's commands such as a doorbell view. It works on items and menu entries and needs no extra permission.

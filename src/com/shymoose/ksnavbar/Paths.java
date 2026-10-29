@@ -27,6 +27,17 @@ final class Paths {
         return result;
     }
 
+    /**
+     * A hide-on entry. A bare page such as energy, which no dashboard view path looks like, also
+     * covers its sub-pages, so it is kept as a prefix match.
+     */
+    static String hideEntry(String page) {
+        String path = normalize(page);
+        String raw = stripTrailingSlashes(page.trim().replaceAll("[?#].*$", ""));
+        boolean bare = !raw.isEmpty() && raw.indexOf('/', 1) < 0 && !raw.equals("/");
+        return bare ? path + "/*" : path;
+    }
+
     private static int indexOfAny(String text, char a, char b) {
         int first = text.indexOf(a);
         int second = text.indexOf(b);
