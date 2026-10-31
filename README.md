@@ -1,15 +1,15 @@
-# Navbar for Kiosk Satellite
+# Navigation bar for Kiosk Satellite
 
 **A native navigation bar for [Kiosk Satellite](https://github.com/jxlarrea/kiosk-satellite) wall panels.** It highlights the page you're on, opens menus and camera grids, and keeps your Home Assistant dashboard clear of it. Kiosk Satellite draws it with its own colors, type and icons, so it looks like part of the kiosk.
 
-<p align="center"><img src="docs/images/bar.png" alt="The navbar along the bottom of a dashboard" width="720"></p>
+<p align="center"><img src="docs/images/bar.png" alt="The navigation bar along the bottom of a dashboard" width="720"></p>
 
 | Grid menu | List menu | Hidden |
 | :---: | :---: | :---: |
 | <img src="docs/images/grid.png" alt="A camera grid menu" width="260"> | <img src="docs/images/list.png" alt="A list menu of kiosk actions" width="260"> | <img src="docs/images/tab.png" alt="The bar hidden behind a tab" width="260"> |
 | Long menus, such as cameras, show as tiles | Short menus show as a list | Swipe down to hide the bar behind a tab |
 
-A companion to [Action Bar for Kiosk Satellite](https://github.com/dimatx/kiosk-satellite-action-bar): the navbar moves between pages, the action bar switches lights, shades and locks in place. Put the navbar along the bottom and the action bar on the right, and the dashboard keeps clear of both.
+A companion to [Action bar for Kiosk Satellite](https://github.com/dimatx/kiosk-satellite-action-bar): the navigation bar moves between pages, the action bar switches lights, shades and locks in place. Put the navigation bar along the bottom and the action bar on the right, and the dashboard keeps clear of both.
 
 ## Why use it
 
@@ -30,11 +30,11 @@ Needs Kiosk Satellite **2026.10.42** or newer. On **2026.10.30** and newer the b
 
 ### Community Plugins (Recommended)
 
-Navbar is listed in [Community Plugins](https://kiosksatellite.com/plugins/). Use the button below to open it in your Kiosk Satellite and install it.
+Navigation bar is listed in [Community Plugins](https://kiosksatellite.com/plugins/). Use the button below to open it in your Kiosk Satellite and install it.
 
 [![Install in Kiosk Satellite](https://kiosksatellite.com/img/badges/plugin-add.svg)](https://kiosksatellite.com/redirect/plugin/?repository=dimatx/kiosk-satellite-navbar)
 
-Or search for `Navbar` in **Settings > Plugin Manager > Browse plugins** in Kiosk Satellite.
+Or search for `Navigation bar` in **Settings > Plugin Manager > Browse plugins** in Kiosk Satellite.
 
 ### Manual
 
@@ -44,7 +44,7 @@ Or search for `Navbar` in **Settings > Plugin Manager > Browse plugins** in Kios
 
 ### First steps
 
-Turn on **Navbar**. It starts with a Home item. Open **Navbar** and add your own items under **Items**. With Fleet Management, add Navbar to a profile's **Plugins** row and every kiosk on it gets the same bar.
+Turn on **Navigation bar**. It starts with a Home item. Open **Navigation bar** and add your own items under **Items**. With Fleet Management, add Navigation bar to a profile's **Plugins** row and every kiosk on it gets the same bar.
 
 Settings are on the plugin's page, on the kiosk or in Remote Admin, and take effect as you save them.
 
@@ -75,7 +75,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 
 ## Settings
 
-<p align="center"><img src="docs/images/settings.png" alt="The Navbar settings page" width="560"></p>
+<p align="center"><img src="docs/images/settings.png" alt="The Navigation bar settings page" width="560"></p>
 
 | Setting | What it does |
 | --- | --- |
@@ -92,7 +92,7 @@ Each item has a **Label**, what it **Opens**, and optional icons.
 <details>
 <summary><b>Left and right rails</b></summary>
 
-<p align="center"><img src="docs/images/rail.png" alt="The navbar as a rail on the left" width="560"></p>
+<p align="center"><img src="docs/images/rail.png" alt="The navigation bar as a rail on the left" width="560"></p>
 
 On the left or right, the bar becomes a rail. Menus open beside it, a sideways swipe hides it behind a tab on the edge, and the dashboard keeps clear of it in the same way.
 
@@ -110,7 +110,7 @@ Swipe the bar toward its edge to hide it behind a small tab. Swipe the tab back,
 <details>
 <summary><b>Gestures and the kiosk drawer</b></summary>
 
-**Show navbar**, **Hide navbar** and **Toggle navbar** can be mapped to a gesture or added to the kiosk drawer, under the plugin's **Actions**.
+**Show navigation bar**, **Hide navigation bar** and **Toggle navigation bar** can be mapped to a gesture or added to the kiosk drawer, under the plugin's **Actions**.
 
 </details>
 
@@ -132,7 +132,7 @@ The ZIP lands in `dist/`. Install it with **Plugin Manager > Developer Tools > I
 
 ## Privacy
 
-Navbar sends nothing anywhere. It asks Kiosk Satellite to open dashboard pages, camera views, web addresses and kiosk actions you configure, and reads which page is showing so it can highlight the right item. It has no network access of its own and never sees a Home Assistant token.
+Navigation bar sends nothing anywhere. It asks Kiosk Satellite to open dashboard pages, camera views, web addresses and kiosk actions you configure, and reads which page is showing so it can highlight the right item. It has no network access of its own and never sees a Home Assistant token.
 
 ## Credits
 

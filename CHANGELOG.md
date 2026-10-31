@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.20.2
+
+- **Changed** the plugin is now called **Navigation bar**, and its actions **Show navigation bar**, **Hide navigation bar** and **Toggle navigation bar**. The plugin ID and your settings are unchanged.
+
 ## 0.20.1
 
 - **Fixed** **Hide the bar on** now covers a built-in page's sub-pages, so picking Energy also hides the bar on Energy's setup and Electricity tabs.

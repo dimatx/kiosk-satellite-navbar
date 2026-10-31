@@ -1,6 +1,6 @@
 # Plugin SDK gaps
 
-Building this navbar ran into places where the Kiosk Satellite plugin SDK made a feature hard, slow or impossible. This page collects them for the KS maintainer. Each entry explains what the navbar needed, what happens today, how the plugin works around it and what would help.
+Building this navigation bar ran into places where the Kiosk Satellite plugin SDK made a feature hard, slow or impossible. This page collects them for the KS maintainer. Each entry explains what the navigation bar needed, what happens today, how the plugin works around it and what would help.
 
 Updated for **Kiosk Satellite 2026.10.43**. 2026.10.39 closed gap 33, 2026.10.40 closed gap 34 and 2026.10.43 closed gap 32. Most of the original list was closed by 2026.10.23, and the open gaps were last measured on that version. 2026.10.27 closed gap 11; the plugin code changed in 2026.10.24 to 2026.10.29 touches none of the others. Gap numbers never change, so a closed gap keeps its number and the numbering has holes.
 
@@ -40,7 +40,7 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 
 ### Overlay responsiveness
 
-The navbar is a set of native overlays, so how fast KS creates, resizes and layers them sets how quick the bar feels. These three gaps cost the most, and every plugin with an interactive overlay will run into them.
+The navigation bar is a set of native overlays, so how fast KS creates, resizes and layers them sets how quick the bar feels. These three gaps cost the most, and every plugin with an interactive overlay will run into them.
 
 #### 15. Creating an overlay is very slow on low-power panels
 
@@ -95,7 +95,7 @@ The 2026.10.23 release notes do not mention it. The new `enter` transitions anim
 **Suggestion:** Detect the bad combination and use Skia for platform views, or turn on **Legacy renderer** automatically when a plugin overlay is shown on Mesa with `minigbm`, the way it already does after startup crashes.
 ### The settings page
 
-The 2026.10.23 pickers and lists made the navbar configurable without typing paths or JSON. What remains is how those lists present what users chose. These are all small, and all visible on the navbar's main settings page.
+The 2026.10.23 pickers and lists made the navigation bar configurable without typing paths or JSON. What remains is how those lists present what users chose. These are all small, and all visible on the navigation bar's main settings page.
 
 #### 22. A list row's subtitle shows raw picker values
 
@@ -151,7 +151,7 @@ These matter once there is more than one display, or more than one build.
 
 **Need:** Update a plugin on the leader and see every follower get it, or learn why one did not.
 
-**Today:** A follower whose Kiosk Satellite version differs from the leader's takes no plugin updates at all until it is on the same version. The fleet page says only *Needs 2026.10.31* on the follower's row, and the follower's Plugin Manager says nothing. Measured on 2026.10.31 with 11 of 12 followers on 2026.10.29: after a navbar release only the follower on the leader's version moved up, and the rest stayed one or two releases behind with the plugin still marked as synced.
+**Today:** A follower whose Kiosk Satellite version differs from the leader's takes no plugin updates at all until it is on the same version. The fleet page says only *Needs 2026.10.31* on the follower's row, and the follower's Plugin Manager says nothing. Measured on 2026.10.31 with 11 of 12 followers on 2026.10.29: after a navigation bar release only the follower on the leader's version moved up, and the rest stayed one or two releases behind with the plugin still marked as synced.
 
 **Workaround:** Update every follower's Kiosk Satellite first, then the plugins.
 
@@ -163,7 +163,7 @@ These matter once there is more than one display, or more than one build.
 
 **Need:** Move kiosks that already run a plugin from GitHub under fleet management.
 
-**Today:** A follower that installed the plugin from its GitHub repository refuses the leader's package: the leader's row shows *Could not install Navbar: This plugin ID belongs to another repository. Uninstall it before changing sources.* The packages are the same release from the same repository, checked by SHA-256. Seen on a Fire Max 11 on 2026.10.31.
+**Today:** A follower that installed the plugin from its GitHub repository refuses the leader's package: the leader's row shows *Could not install Navigation bar: This plugin ID belongs to another repository. Uninstall it before changing sources.* The packages are the same release from the same repository, checked by SHA-256. Seen on a Fire Max 11 on 2026.10.31.
 
 **Workaround:** Remove the plugin on that follower, which deletes its settings, and sync again.
 
@@ -223,7 +223,7 @@ The KS plugin docs (`creating-plugins.md`, `overlays.md`, `ks-api.md`) already c
 
 ## Resolved
 
-| # | Gap | Resolved by | How the navbar uses it |
+| # | Gap | Resolved by | How the navigation bar uses it |
 | --- | --- | --- | --- |
 | 1 | Overlays could not reserve space in the dashboard | `setContentInsets` | **Keep the dashboard clear** reserves the bar's depth, or the tab's while the bar is hidden. No card-mod padding |
 | 2 | No structured or long settings | `list` settings with nested lists | Items are a list, and a menu's entries a nested list, edited in a form instead of a 512-character string |

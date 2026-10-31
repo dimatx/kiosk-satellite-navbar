@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "ks-navbar",
-  "name": "Navbar",
-  "version": "0.20.1",
+  "name": "Navigation bar",
+  "version": "0.20.2",
   "apiVersion": 1,
   "minAppVersion": "2026.10.42",
   "minAndroidSdk": 26,
@@ -505,15 +505,15 @@
   "commands": [
     {
       "id": "show",
-      "title": "Show navbar"
+      "title": "Show navigation bar"
     },
     {
       "id": "hide",
-      "title": "Hide navbar"
+      "title": "Hide navigation bar"
     },
     {
       "id": "toggle",
-      "title": "Toggle navbar"
+      "title": "Toggle navigation bar"
     }
   ],
   "groups": [

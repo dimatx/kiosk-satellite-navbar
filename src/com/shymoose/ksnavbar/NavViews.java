@@ -1032,7 +1032,7 @@ final class NavViews {
             // A rail's tab stands upright against the side edge.
             setOrientation(config.vertical ? VERTICAL : HORIZONTAL);
             setGravity(Gravity.CENTER);
-            setContentDescription("Open navbar");
+            setContentDescription("Open navigation bar");
             current = icon(context);
             chevron = icon(context);
             addView(current);

@@ -535,7 +535,7 @@ public final class NavbarPlugin implements KioskPlugin {
         if (cfg.items.isEmpty()) {
             text.append("Add an item to show the bar.");
         } else if (userHidden) {
-            text.append("Hidden by the Hide navbar action. Run Show navbar to bring it back.");
+            text.append("Hidden by the Hide navigation bar action. Run Show navigation bar to bring it back.");
         } else if (!cfg.visibleAt(path)) {
             text.append("Hidden on this page, which is listed under Hide the bar on.");
         }
@@ -547,7 +547,7 @@ public final class NavbarPlugin implements KioskPlugin {
             lastStatus = message;
             lastStatusError = error;
         } catch (RuntimeException failure) {
-            log(current, "Could not report navbar status", failure);
+            log(current, "Could not report navigation bar status", failure);
         }
     }
     /** Main thread. A failure is only reported if no newer tap or session has happened since. */
