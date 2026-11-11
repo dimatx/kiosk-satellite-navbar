@@ -25,7 +25,6 @@ Priority reflects how much the gap costs this plugin's users today, not how hard
 | 15 | Creating an overlay is very slow on low-power panels | Product, Docs | High | Menus take about a second to open on a ThinkSmart View |
 | 16 | A resized `WRAP` overlay shows a stale, stretched frame | Product, Docs | High | Without a workaround, the bar flashes stretched when it hides or shows |
 | 27 | Plugin overlays are garbled with Impeller on Mesa and minigbm | Product | Medium | On an x86 kiosk with an Intel GPU the bar is unreadable stripes until **Legacy renderer** is turned on |
-| 25 | An overlay cannot change layer without being rebuilt | Product | Medium | A pause when a camera view opens or closes |
 | 22 | A list row's subtitle shows raw picker values | Product | Medium | Items and hidden pages read `navbar-demo/lights` instead of *Navbar demo / Lights* |
 | 23 | An icon field cannot show a fallback | Product | Medium | An empty icon looks unset, and the plugin can no longer fill it in |
 | 21 | A list row cannot summarize a nested list | Product | Low | A menu item's row does not say what the menu holds |
@@ -71,16 +70,6 @@ The 2026.10.23 release notes do not mention it. The new `enter` transitions anim
 **Workaround:** Redrawing after the resize only shortens the glitch, because the stretched frame is still composited first. The plugin skips drawing (an empty `dispatchDraw`, not alpha) from the moment the size will change until the host frame has the measured size. It stays hidden another 150 ms so the surface catches up, then draws, and redraws again at 300 ms and 800 ms. A 900 ms timeout reveals the view anyway. Menus are their own overlay, so opening one never resizes the bar.
 
 **Suggestion:** Don't composite a resized texture until the view has drawn into it at the new size, for example by keeping the old size until the first frame at the new size arrives. Every plugin with a wrapped overlay that changes size hits this, so it belongs in KS rather than in each plugin. Until then, document it with the workaround above.
-
-#### 25. An overlay cannot change layer without being rebuilt
-
-*Product.*
-
-**Need:** Keep the bar above a camera view while one is open, and back under KS's menu and the screensaver once it closes.
-
-**Today:** `onTop` is fixed when the overlay is shown, and it places the overlay over the screensaver and the menu as well as camera views. To follow a camera view, the plugin listens for `camera.view`, replaces its own overlay with `onTop(true)`, and replaces it again when the view closes. Each replacement is a new overlay, so it pays the cost in 15. Because an `onTop` overlay also covers the screensaver, the plugin watches `screensaver.state` and drops back down for it.
-
-**Suggestion:** A layer above camera views but below the screensaver and KS's menu, such as `OverlaySpec.layer(ABOVE_CAMERA)`, or a way to change an existing overlay's layer without replacing it.
 
 #### 27. Plugin overlays are garbled with Impeller on Mesa and minigbm
 
@@ -244,5 +233,7 @@ The KS plugin docs (`creating-plugins.md`, `overlays.md`, `ks-api.md`) already c
 | 26 | A wrapped overlay was cut off when the UI scale was above 100% | 2026.10.30 sizes the window with the unscaled pixel ratio | The workaround in the resize gate stays for older versions and never triggers on 2026.10.30 and newer |
 | 28 | A fleet-synced plugin could not be sized per kiosk | 2026.10.30: plugins follow each kiosk's **Scale UI** (upstream issue 1037) | **Size** is a fleet-wide multiplier on top of each kiosk's Scale UI |
 | 33 | Plugins could not launch an Android app | `launchApp` and `getLauncherApps` (2026.10.39, upstream issue 1122) | **App** items and entries pick from the App Launcher's apps with plugin choices and open them |
+| 25 | An overlay could not change layer without being rebuilt | OverlaySpec.layer(LAYER_VIEWS) and 
+avigation.view (kiosk-satellite 2026.11.14, upstream issue 1366) | The bar stays in one layer over every page and view, so the pause on camera views is gone and the Calendar and other plugins' screens no longer cover it. Older kiosks keep the old swap |
 | 34 | A manifest could not declare a minimum Kiosk Satellite version | `minAppVersion` (2026.10.40, upstream issue 1140) | The manifest says 2026.10.39, so an older kiosk refuses the update and keeps the version it has |
 | 32 | The dashboard picker left out Home Assistant's built-in pages | Built-in pages in every dashboard picker and getDashboards with uiltIn: true (2026.10.43, upstream issue 1180) | **Hide the bar on** and **Page** list Energy, Map and the rest. A bare nergy hides the bar on its sub-pages. **Built-in page** stays for older kiosks |

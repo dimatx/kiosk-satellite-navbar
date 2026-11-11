@@ -21,6 +21,7 @@ public final class ControllerTest {
         menuReplacement();
         changedDelay();
         cameraOrdering();
+        viewsLayer();
         statusRecovery();
         stoppedSession();
         layoutBounds();
@@ -101,6 +102,7 @@ public final class ControllerTest {
 
     private static void cameraOrdering() throws Exception {
         Fixture f = new Fixture(0, false);
+        setField(f.plugin, "viewsLayer", false);
         f.plugin.onEvent("ks.camera.view", camera(true, "new"));
         f.host.reply("getCameraViewState", true, camera(false, null), null);
         f.clock.flush();
@@ -115,10 +117,25 @@ public final class ControllerTest {
         check(!(Boolean) field(f.plugin, "builtOver"), "active screensaver moves bar below KS");
 
         f = new Fixture(0, false);
+        setField(f.plugin, "viewsLayer", false);
         f.host.reply("getCameraViewState", true, camera(true, "existing"), null);
         f.host.reply("isScreensaverActive", true, true, null);
         f.clock.flush();
         check(!(Boolean) field(f.plugin, "builtOver"), "startup with an active screensaver never moves above it");
+    }
+
+    private static void viewsLayer() throws Exception {
+        Fixture f = new Fixture(0, false);
+        f.plugin.onEvent("ks.screensaver.state", map("active", false));
+        f.clock.flush();
+        int shows = f.host.barShows;
+        f.plugin.onEvent("ks.camera.view", camera(true, "new"));
+        f.plugin.onEvent("ks.screensaver.state", map("active", true));
+        f.plugin.onEvent("ks.screensaver.state", map("active", false));
+        f.plugin.onEvent("ks.camera.view", camera(false, null));
+        f.clock.flush();
+        check(f.host.barShows == shows, "in the views layer the bar is not rebuilt for cameras or the screensaver");
+        check((Boolean) field(f.plugin, "builtOver"), "in the views layer the bar always carries its camera Close button");
     }
 
     private static void statusRecovery() {
@@ -263,6 +280,12 @@ public final class ControllerTest {
     }
 
     private static boolean collapsed(NavbarPlugin plugin) throws Exception { return (Boolean) field(plugin, "collapsed"); }
+
+    private static void setField(NavbarPlugin plugin, String name, Object value) throws Exception {
+        java.lang.reflect.Field f = NavbarPlugin.class.getDeclaredField(name);
+        f.setAccessible(true);
+        f.set(plugin, value);
+    }
 
     private static Object field(NavbarPlugin plugin, String name) throws Exception {
         Field field = NavbarPlugin.class.getDeclaredField(name);

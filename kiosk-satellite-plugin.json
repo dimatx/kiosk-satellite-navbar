@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "ks-navbar",
   "name": "Navigation bar",
-  "version": "0.20.2",
+  "version": "0.21.0",
   "apiVersion": 1,
   "minAppVersion": "2026.10.42",
   "minAndroidSdk": 26,

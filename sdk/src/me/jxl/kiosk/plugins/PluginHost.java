@@ -90,8 +90,22 @@ public interface PluginHost {
      * Touches stay with KS. onDestroy means the screensaver is gone, so stop updating the view.
      */
     default void publishScreensaverView(String key, String title, OverlayFactory factory) { throw new UnsupportedOperationException("Native screensavers are unavailable"); }
+    /**
+     * SDK 1, screensaver. As above, but with touch true single taps reach the view and a double tap closes the
+     * screensaver. Draw your own hint, such as "Double tap to close". Older KS releases throw.
+     */
+    default void publishScreensaverView(String key, String title, OverlayFactory factory, boolean touch) { throw new UnsupportedOperationException("Touch screensavers are unavailable"); }
     /** SDK 1, screensaver. Remove a renderer. KS retains the session with a black background. */
     default void removeScreensaver(String key) { throw new UnsupportedOperationException("Screensavers are unavailable"); }
+    /**
+     * SDK 1, player. Offer a player under Media Player > Player, listed under This device as the plugin's name and the
+     * title, such as "Radio: Internet Archive". KS calls listener.onActivate once the user picks it and
+     * onDeactivate when the pick moves on. Publishing again under the same key changes the title. key is 1 to 40
+     * lowercase letters, digits and underscores, title up to 80 characters. At most two players per plugin.
+     */
+    default void publishPlayer(String key, String title, PlayerListener listener) { throw new UnsupportedOperationException("Players are unavailable"); }
+    /** SDK 1, player. Withdraw a player. A pick that names it stays and shows the player as unavailable. */
+    default void removePlayer(String key) { throw new UnsupportedOperationException("Players are unavailable"); }
     /** Publish a bounded chart snapshot. SDK 1. */
     default void publishSeries(String key, Map<String, Object> chart) { throw new UnsupportedOperationException("Charts are unavailable"); }
     /** Remove this session's chart with the given key. */
@@ -197,4 +211,11 @@ public interface PluginHost {
     /** SDK 1, entities. Changes arrive as select.KEY with {option: string}. Publish the applied option to confirm it. */
     default void publishSelect(String key, String name, String[] options, String state) { throw new UnsupportedOperationException("SDK 1 required"); }
     default void removeSelect(String key) { throw new UnsupportedOperationException("SDK 1 required"); }
+    /**
+     * SDK 1, entities. A number with a nullable state. Metadata: min (default 0), max (default 100), step (default 1),
+     * unit and mode ("auto", "slider" or "box"). Changes arrive as number.KEY with {value: double}. Publish the
+     * applied value to confirm it.
+     */
+    default void publishNumber(String key, String name, Map<String, Object> metadata, Double state) { throw new UnsupportedOperationException("Plugin numbers are unavailable"); }
+    default void removeNumber(String key) { throw new UnsupportedOperationException("Plugin numbers are unavailable"); }
 }

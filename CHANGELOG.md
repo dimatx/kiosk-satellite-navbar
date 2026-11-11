@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.21.0
+
+- **Added** the bar now stays over the Calendar, the Music Library, alarms and other plugins' screens such as Music Assistant, not just the dashboard and camera views. Needs Kiosk Satellite 2026.11.14 or newer. On older releases it behaves as before.
+- **Changed** the bar is no longer rebuilt when a camera view opens or closes, so the pause there is gone.
+
 ## 0.20.2
 
 - **Changed** the plugin is now called **Navigation bar**, and its actions **Show navigation bar**, **Hide navigation bar** and **Toggle navigation bar**. The plugin ID and your settings are unchanged.

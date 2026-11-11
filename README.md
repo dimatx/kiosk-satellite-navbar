@@ -19,7 +19,7 @@ For passive status updates, add [Live notifications for Kiosk Satellite](https:/
 - **Menus and grids.** An item can open a list, or a grid of tiles for things like cameras. Optionally, a tap opens a page and a long press opens the menu.
 - **More than pages.** Items can open camera views, the calendar, Music Assistant, Now Playing, the screensaver, the app launcher or a web address.
 - **Keeps the dashboard clear.** The dashboard ends above the bar, so no card hides under it. No card-mod needed.
-- **Works over camera views.** The bar stays on screen while a camera view is open, with a **Close** button, so you can switch cameras or leave without reaching for the camera view's own controls.
+- **Stays on screen.** The bar stays over camera views, with a **Close** button, and over the Calendar, the Music Library and other plugins' screens such as Music Assistant, so you can switch pages from anywhere. Kiosk Satellite 2026.11.14 or newer is needed for the pages other than camera views.
 - **Any edge.** A bar along the bottom or top, or a rail down the left or right side.
 - **Out of the way.** Set how translucent it is, and swipe it away behind a small tab.
 - **Made for fleets.** Set it up once on the fleet leader and every kiosk gets the same bar. Each kiosk's **Scale UI** sets its size.

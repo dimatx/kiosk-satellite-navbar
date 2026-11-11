@@ -369,6 +369,7 @@ final class NavViews {
                     listener.onCloseCamera();
                 }
             }, overCamera);
+            bar.setCloseShown(camera != null);
             tab = new Tab(context, theme, config, active, view -> {
                 listener.onInteraction();
                 listener.onExpand();
@@ -423,6 +424,7 @@ final class NavViews {
             if (java.util.Objects.equals(nextPath, path) && java.util.Objects.equals(nextCamera, camera)) return;
             path = nextPath;
             camera = nextCamera;
+            bar.setCloseShown(camera != null);
             removeCallbacks(settle);
             showActive(config.activeIndex(path, camera));
         }
@@ -680,6 +682,11 @@ final class NavViews {
         private final LinearLayout close;
         private final ImageView closeIcon;
         private final TextView closeLabel;
+
+        /** The Close button only shows while a camera view is open. A bar that stays over every page keeps it built. */
+        void setCloseShown(boolean shown) {
+            if (close != null) close.setVisibility(shown ? VISIBLE : GONE);
+        }
 
         Bar(Context context, KsTheme theme, NavConfig config, int active, Taps taps, boolean closeButton) {
             super(context);

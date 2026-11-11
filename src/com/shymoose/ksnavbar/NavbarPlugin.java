@@ -88,6 +88,8 @@ public final class NavbarPlugin implements KioskPlugin {
     private boolean shown;
     /** Whether the shown bar was built to sit over camera views. */
     private boolean builtOver;
+    /** Whether this Kiosk Satellite has the views layer, where the bar stays over every page and view. */
+    private boolean viewsLayer = true;
     private int openMenu = -1;
     private int menuGeneration;
     /** A tap that reaches the bar this late, in ms, is logged. */
@@ -332,12 +334,26 @@ public final class NavbarPlugin implements KioskPlugin {
         main.post(this::syncOverlay);
     }
 
+    /** Puts an overlay in the views layer, or on an older Kiosk Satellite in the top layer while over a camera view. */
+    private OverlaySpec layered(OverlaySpec spec, boolean over) {
+        if (viewsLayer) {
+            try {
+                return spec.layer(OverlaySpec.LAYER_VIEWS);
+            } catch (LinkageError olderHost) {
+                viewsLayer = false;
+            }
+        }
+        return spec.onTop(over);
+    }
+
     /** Main thread. Show, hide, rebuild or update the overlay. */
     private void syncOverlay() {
         PluginHost current = host;
         if (current == null) return;
         NavConfig cfg = config;
         boolean visible = !userHidden && cfg.visibleAt(path);
+        // The views layer covers camera views too, so without Show over camera views the bar hides there.
+        if (viewsLayer && camera != null && !cfg.overCameras) visible = false;
         try {
             if (!visible) {
                 closeMenu();
@@ -349,16 +365,16 @@ public final class NavbarPlugin implements KioskPlugin {
                 reserve(0);
                 return;
             }
-            // Over an open camera view the bar moves to KS's top layer, which needs a new overlay.
-            // Not over the screensaver, which also sits below that layer.
-            boolean over = cfg.overCameras && camera != null && !screensaver;
+            // In the views layer the bar never moves. Without it, an open camera view moves the bar to
+            // KS's top layer, which needs a new overlay, and not over the screensaver below that layer.
+            boolean over = viewsLayer ? cfg.overCameras : cfg.overCameras && camera != null && !screensaver;
             boolean replace = rebuild.getAndSet(false);
             if (!shown || replace || over != builtOver) {
                 closeMenu();
                 String anchor = anchor(cfg);
                 builtOver = over;
                 // Flush with the edge: the view keeps the bar's distance itself, so the tab can touch it.
-                current.showOverlay(BAR, OverlaySpec.at(anchor).closeOnBack(false).onTop(over)
+                current.showOverlay(BAR, layered(OverlaySpec.at(anchor).closeOnBack(false), over)
                     .enter(OverlaySpec.FADE).exit(OverlaySpec.FADE).transitionDuration(BAR_TRANSITION_MS), new RootFactory());
                 issue(current, "overlay", null);
                 if (depth > 0) reserve(depth);
@@ -451,8 +467,7 @@ public final class NavbarPlugin implements KioskPlugin {
             case RIGHT: right = clear; break;
             default: bottom = clear; break;
         }
-        OverlaySpec spec = OverlaySpec.at(anchor(cfg))
-            .onTop(builtOver)
+        OverlaySpec spec = layered(OverlaySpec.at(anchor(cfg)), builtOver)
             .inset(left, top, right, bottom)
             .offset(cfg.vertical ? 0 : offsetDp, cfg.vertical ? offsetDp : 0)
             .closeOnOutsideTouch(true)
