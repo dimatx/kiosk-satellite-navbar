@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.21.1
+
+- Documentation only: the README now lists **Open the alarm list** and **Open the timers** as examples for **Any action**.
+
 ## 0.21.0
 
 - **Added** the bar now stays over the Calendar, the Music Library, alarms and other plugins' screens such as Music Assistant, not just the dashboard and camera views. Needs Kiosk Satellite 2026.11.14 or newer. On older releases it behaves as before.
